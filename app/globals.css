@@ -1,0 +1,541 @@
+:root {
+  color-scheme: light;
+  --bg: #fafafa;
+  --fg: #111;
+  --muted: #666;
+  --card: #fff;
+  --border: #e5e5e5;
+  --accent: #2563eb;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: clip; /* the hero stickers overhang the photo; never let them cause sideways scroll */
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+/* Fixed dot-field layer behind all content; mouse events come from window listeners. */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Floating navigation dock (JellyRadio) at the bottom centre of the screen. */
+.dock {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  bottom: max(56px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  max-width: calc(100vw - 16px);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, #ffffff 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 0.08);
+  padding: 8px 0; /* keeps the dock as tall as with 48px chips while the chips themselves are shorter */
+}
+
+/* Slightly taller chips than JellyRadio's "md" (36px). Set on the skin because the component
+   writes --jr-h inline, which a stylesheet can't override. */
+.dock .jelly-radio__skin {
+  height: 40px;
+}
+
+/* Narrow screens: icons only. Labels stay in the accessibility tree (visually hidden, not removed). */
+@media (max-width: 520px) {
+  .dock .jelly-radio__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+.section {
+  min-height: 100vh;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 56px 24px; /* was 96px when a 64px top nav sat above the content */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.section h2 {
+  font-size: 2rem;
+}
+
+.section p {
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  line-height: 1.1;
+}
+
+/* Photo frame with decorative SVG stickers overhanging its corners. Offsets and sizes are
+   percentages of the frame width so they scale with it. */
+.hero-photo {
+  position: relative;
+  isolation: isolate; /* keeps the backdrop's negative z-index inside this block */
+  flex-shrink: 0;
+  width: min(340px, 100%);
+}
+
+/* Group 4 "paper" shape behind the photo, turned 90°. The SVG is 1038×643, so after rotating,
+   its on-screen width is the element's height: width 210% → height ≈ 130% of the frame width. */
+.hero-photo__backdrop {
+  display: none;  /*TEMP: Group 4 hidden — delete this line to bring it back */
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: 210%;
+  height: auto;
+  max-width: none;
+  /* scaleX runs before the rotation, so it shortens the shape's on-screen height only
+     (~714px → ~535px, about 40px past the photo top and bottom) without making it narrower. */
+  transform: translate(-50%, -50%) rotate(90deg) scaleX(0.75);
+  pointer-events: none;
+}
+
+/* Status chip moved to the bottom-right, sitting in a row just left of the refresh button
+   (right-anchored so longer labels grow leftward; bottom aligns its centre with the button's). */
+.hero-photo .refine-frame__chip {
+  left: auto;
+  right: 58px;
+  bottom: 18px;
+}
+
+/* Refresh button: bottom-right of the photo, beside the status chip, above the stickers. */
+.hero-photo__refresh {
+  position: absolute;
+  z-index: 2;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, #27272a 70%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #f5f5f5;
+  cursor: pointer;
+  transition: transform 160ms ease, background-color 150ms ease;
+}
+
+.hero-photo__refresh:hover {
+  background: color-mix(in srgb, #27272a 85%, transparent);
+}
+
+.hero-photo__refresh:active {
+  transform: scale(0.94);
+}
+
+.hero-photo__refresh:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.hero-photo__refresh-icon {
+  display: grid;
+  animation: hero-refresh-spin 500ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes hero-refresh-spin {
+  from {
+    transform: rotate(-360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-photo__refresh-icon {
+    animation: none;
+  }
+}
+
+.hero-photo__deco {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-photo__deco img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: opacity 300ms ease;
+}
+
+/* Each sticker has an idle and a hover version stacked in the same spot; hovering the photo
+   (or focusing the refresh button) swaps them. */
+.hero-photo__deco .hero-photo__deco-hover {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+}
+
+.hero-photo:hover .hero-photo__deco-hover,
+.hero-photo:focus-within .hero-photo__deco-hover {
+  opacity: 1;
+}
+
+.hero-photo:hover .hero-photo__deco img:not(.hero-photo__deco-hover),
+.hero-photo:focus-within .hero-photo__deco img:not(.hero-photo__deco-hover) {
+  opacity: 0;
+}
+
+.hero-photo__deco--top-left {
+  width: 28%;
+  top: -16%;
+  left: -12%;
+}
+
+.hero-photo__deco--top-right {
+  width: 50%;
+  top: 2%; /* sticker is ~31% of the frame's height, so its bottom sits ~33% down — above halfway */
+  right: -22%;
+}
+
+.hero-photo__deco--bottom-left {
+  width: 32%;
+  bottom: -16%;
+  left: -14%;
+}
+
+/* Typed text and its invisible sizer share one grid cell, so the heading keeps the size of the longest line. */
+.hero-title {
+  display: grid;
+  white-space: nowrap; /* keep each of the two lines whole */
+}
+
+.hero-title .text-type {
+  white-space: nowrap;
+}
+
+.hero-title > * {
+  grid-area: 1 / 1;
+}
+
+.hero-title__sizer {
+  visibility: hidden;
+}
+
+.hero {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  /* Centre the hero in the space above the dock (which covers ~120px at the bottom),
+     so it sits higher than true centre. The top still leaves room for the stickers. */
+  padding-top: 72px;
+  padding-bottom: 200px;
+}
+
+/* The text block is centred in its column as a whole (the grid track shrinks to the widest
+   line and sits in the middle), while every line inside stays left-aligned. */
+.hero-text {
+  flex: 1;
+  display: grid;
+  justify-content: center;
+  justify-items: start;
+  text-align: left;
+  gap: 20px;
+}
+
+.hero p {
+  font-size: 1.25rem;
+}
+
+@media (max-width: 760px) {
+  .hero {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .hero-text {
+    flex: none;
+  }
+}
+
+.button {
+  align-self: flex-start;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+
+/* Full-bleed section (Projects): spans the whole screen with a small gutter at the edges. */
+.section--wide {
+  max-width: none;
+  /* Scales with the screen: 24px on small laptops up to 96px on wide monitors. */
+  padding-left: clamp(24px, 6vw, 96px);
+  padding-right: clamp(24px, 6vw, 96px);
+}
+
+@media (max-width: 640px) {
+  .section--wide {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+/* Projects: two per row, one on narrow screens. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Experience: a vertical timeline, one card per role with a dot on the line. */
+.timeline {
+  list-style: none;
+  display: grid;
+  gap: 16px;
+  padding-left: 20px;
+  border-left: 2px solid var(--border);
+}
+
+.timeline__item {
+  position: relative;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.timeline__item::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: -28px; /* centred on the line: 20px padding + 1px line half + 7px dot half */
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--bg);
+}
+
+.timeline__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 16px;
+}
+
+.timeline__head h3 {
+  font-size: 1.05rem;
+}
+
+.timeline__org {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.timeline__dates {
+  font-size: 0.85rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.timeline__points {
+  margin-top: 8px;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+/* Trivia: fun facts as a simple card list. */
+.trivia {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.trivia li {
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+/* Project filter: chips + a live count. */
+.project-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin-left: -2px; /* JellyRadio pads itself by 2px (no swell here); line its chips up with the heading */
+}
+
+/* No colour change on the chosen chip — just a dotted outline. Every chip carries the same
+   (transparent) border so selecting one doesn't shift the layout. */
+.project-filter .jelly-radio__skin {
+  border: 1px dotted transparent;
+  transition: border-color 200ms ease;
+}
+
+.project-filter .jelly-radio__chip[data-on="true"] .jelly-radio__skin {
+  border-color: #18181b;
+}
+
+.project-filter__status {
+  font-size: 0.9rem;
+}
+
+/* Cards: dimmed when outside the chosen category. */
+.project-card {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  transition: opacity 300ms ease;
+}
+
+.project-card[data-dim] {
+  opacity: 0.4;
+}
+
+/* Cover image runs edge to edge; the text below has tighter side padding than other cards. */
+.project-card__media {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--c1) 30%, #fff),
+    color-mix(in srgb, var(--c2) 30%, #fff)
+  );
+  display: grid;
+  place-items: center;
+}
+
+.project-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.project-card__placeholder {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--c1) 70%, #18181b);
+  opacity: 0.8;
+}
+
+.project-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px 20px;
+}
+
+/* Bigger type to match the larger showcase cards. */
+.project-card h3 {
+  font-size: clamp(1.2rem, 1.6vw, 1.6rem);
+}
+
+.project-card__body > p {
+  font-size: 1.02rem;
+  max-width: none;
+}
+
+.project-card__cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.project-card__cat {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 12%, transparent);
+  transition:
+    background-color 300ms ease,
+    color 300ms ease;
+}
+
+.project-card__cat[data-on] {
+  color: #fff;
+  background: var(--cat);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  font-size: 0.8rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.footer {
+  text-align: center;
+  padding: 32px 32px 128px; /* bottom room so the dock doesn't cover it */
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+
