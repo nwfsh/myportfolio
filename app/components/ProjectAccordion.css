@@ -1,0 +1,351 @@
+/* Sideways AccordionGallery: a column of strips; the open one grows (flex-grow is animated by GSAP). */
+.project-accordion {
+  /* Light theme: a pale wash dims closed strips and backs the text (the original used a dark one). */
+  --ag-overlay: #fafafa;
+  --ag-gap: 10px;
+  --ag-radius: 14px;
+  --ag-media-size: 320px;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--ag-gap);
+  width: 100%;
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+}
+
+.pa-panel {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--ag-radius);
+  cursor: default; /* normal arrow, not the pointing hand, over the big strips */
+  outline: none;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  background: #e4e4e7;
+  color: #18181b;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px -22px rgba(0, 0, 0, 0.35);
+  will-change: flex-grow, transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Iridescent light at the cursor. One hue slowly cycles (registered with @property so gradients
+   can animate it); the cursor spot's colours are derived from it. */
+@property --pa-hue {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 280deg;
+}
+
+@keyframes pa-hue-cycle {
+  from {
+    --pa-hue: 280deg;
+  }
+  to {
+    --pa-hue: 640deg; /* one full turn */
+  }
+}
+
+.project-accordion {
+  animation: pa-hue-cycle 24s linear infinite; /* one full trip round the colours */
+}
+
+/* Hover spotlight (adapted from React Bits' SpotlightCard): a broad iridescent glow at the cursor
+   inside a grey-white glow. Above the backdrop, below text/video. */
+.pa-panel {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  /* Corner-glow diagonal: odd strips top-left + bottom-right ... */
+  --corner-a: 0% 0%;
+  --corner-b: 100% 100%;
+}
+
+/* ... even strips top-right + bottom-left, so the diagonal flips card to card. */
+.pa-panel:nth-child(even) {
+  --corner-a: 100% 0%;
+  --corner-b: 0% 100%;
+}
+
+.pa-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    /* The only colour: a broad, soft iridescent glow around the cursor (hue slowly cycles). */
+    radial-gradient(
+      circle 190px at var(--mouse-x) var(--mouse-y),
+      oklch(0.84 0.12 var(--pa-hue) / 0.5),
+      oklch(0.88 0.09 calc(var(--pa-hue) + 70deg) / 0.28) 45%,
+      transparent 100%
+    ),
+    /* Around it, a light grey-white glow. */
+    radial-gradient(
+      circle 300px at var(--mouse-x) var(--mouse-y),
+      rgb(255 255 255 / 0.55),
+      rgb(244 244 245 / 0.2) 55%,
+      transparent 85%
+    ),
+    /* Corner glows: exactly the mouse glow's gradient (same colours, strength and fade), on two
+       opposite corners that alternate strip to strip (see --corner-a / --corner-b). */
+    radial-gradient(
+      circle 190px at var(--corner-a),
+      oklch(0.84 0.12 var(--pa-hue) / 0.5),
+      oklch(0.88 0.09 calc(var(--pa-hue) + 70deg) / 0.28) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      circle 190px at var(--corner-b),
+      oklch(0.84 0.12 var(--pa-hue) / 0.5),
+      oklch(0.88 0.09 calc(var(--pa-hue) + 70deg) / 0.28) 45%,
+      transparent 100%
+    );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+/* Only the strip under the cursor glows (no focus-within, which kept a clicked strip lit). */
+.pa-panel:hover::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-accordion {
+    animation: none;
+  }
+}
+
+.pa-panel:focus-visible {
+  box-shadow: 0 0 0 2px #18181b;
+}
+
+.pa-panel__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Grey placeholder until the project has an image. */
+.pa-panel__media {
+  --ag-gray: 1;
+  --ag-dim: 0.35;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: var(--ag-media-size);
+  background: #e4e4e7;
+  filter: grayscale(var(--ag-gray));
+  will-change: transform, filter;
+}
+
+.pa-panel__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Washes out collapsed strips and lightens the left side so the dark text stays readable over any image. */
+.pa-panel__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--ag-overlay) 70%, transparent) 0%, transparent 75%),
+    color-mix(in srgb, var(--ag-overlay) calc(var(--ag-dim, 0.35) * 100%), transparent);
+}
+
+.pa-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 28px;
+  transition: opacity 300ms ease;
+}
+
+.pa-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.pa-head h3 {
+  font-size: clamp(1.3rem, 1.8vw, 1.8rem);
+  line-height: 1.2;
+}
+
+/* Date sits at the far right of the title row. */
+.pa-date {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #71717a;
+  white-space: nowrap;
+}
+
+.pa-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pa-kind,
+.pa-cat,
+.pa-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* Project type (Personal / School / Hackathon): solid dark pill so it reads first. */
+.pa-kind {
+  background: #3f3f46;
+  color: #fafafa;
+}
+
+.pa-cat {
+  border: 1px dotted transparent;
+  background: rgb(0 0 0 / 0.06);
+  color: #3f3f46;
+  transition: border-color 200ms ease;
+}
+
+.pa-cat[data-on] {
+  border-color: #18181b;
+}
+
+.pa-badge {
+  border: 1px solid #a1a1aa;
+}
+
+.pa-badge--status {
+  border-style: dashed;
+  color: #52525b;
+}
+
+.pa-details {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 70ch;
+}
+
+/* GSAP fades these in on the open strip. */
+.pa-details > * {
+  opacity: 0;
+}
+
+.section .pa-details p {
+  color: #3f3f46;
+  max-width: none;
+  font-size: 1.02rem;
+}
+
+.pa-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pa-tag {
+  font-size: 0.8rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid #d4d4d8;
+  color: #52525b;
+}
+
+/* Framed demo video on the right of the strip. Hidden on closed strips; the text column
+   makes room for it. Width follows from the height and the clip's 1280×736 shape. */
+.pa-video {
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  bottom: 20px;
+  right: 24px;
+  aspect-ratio: 1280 / 736;
+  max-width: 46%;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.pa-panel--active .pa-video {
+  opacity: 1;
+}
+
+.pa-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Video strips: full-width text while closed (date at the far right, stack on one row), then the
+   text narrows to the left half as the strip opens and the video box fades in on the right. */
+.pa-panel[data-has-video] .pa-content {
+  max-width: 100%;
+  transition:
+    max-width 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 300ms ease;
+}
+
+.pa-panel--active[data-has-video] .pa-content {
+  max-width: 52%;
+}
+
+/* Phones: no accordion — every project is a full card in a plain list. */
+@media (max-width: 640px) {
+  .project-accordion {
+    height: auto !important;
+    perspective: none;
+  }
+
+  .pa-panel {
+    flex: none !important;
+    transform: none !important;
+  }
+
+  .pa-details > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Video sits under the text, full width. */
+  .pa-panel[data-has-video] .pa-content {
+    max-width: none;
+  }
+
+  .pa-video {
+    position: relative;
+    inset: auto;
+    display: block;
+    width: auto;
+    max-width: none;
+    margin: 0 28px 22px;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-panel,
+  .pa-panel__media {
+    will-change: auto;
+  }
+}
