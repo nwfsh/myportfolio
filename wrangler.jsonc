@@ -1,0 +1,9 @@
+// Cloudflare Worker config: serves the static site that `npm run build` writes to out/.
+{
+  "name": "myportfolio",
+  "compatibility_date": "2026-09-24",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}
