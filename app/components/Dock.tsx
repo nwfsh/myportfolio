@@ -2,15 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Briefcase01Icon, Folder01Icon, Home01Icon, Mail01Icon, SparklesIcon } from "@hugeicons/core-free-icons";
+import { Briefcase01Icon, Folder01Icon, Home01Icon, UserIcon } from "@hugeicons/core-free-icons";
 import JellyRadio from "./JellyRadio";
 
 const SECTIONS = [
   { id: "home", label: "Home", icon: Home01Icon },
   { id: "projects", label: "Projects", icon: Folder01Icon },
   { id: "experience", label: "Experience", icon: Briefcase01Icon },
-  { id: "contact", label: "Contact", icon: Mail01Icon },
-  { id: "bytesize", label: "Trivia", icon: SparklesIcon },
+  { id: "profile", label: "Reach Me", icon: UserIcon },
 ];
 
 // While a click-triggered smooth scroll is running, ignore scroll-spy so the dock doesn't

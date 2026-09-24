@@ -1,0 +1,63 @@
+/* Full-width banner across the screen. Its content lines up with the wide sections' column
+   (one-sixth of the screen in from each side). Fonts: Lato for the email/links, Cantarell else. */
+.banner {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  background: #f4f4f5;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.banner__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 40px;
+  padding: 28px max(32px, calc(100vw / 6));
+}
+
+.banner__talk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 20px;
+  transition: opacity 150ms ease;
+}
+
+.banner__talk:hover,
+.banner__link:hover {
+  opacity: 0.6;
+}
+
+.banner__label {
+  font-size: 0.9rem;
+  color: #71717a;
+}
+
+.banner__email,
+.banner__link {
+  font-family: var(--font-lato), sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+  color: #18181b;
+}
+
+.banner__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}
+
+.banner__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  transition: opacity 150ms ease;
+}
+
+@media (max-width: 640px) {
+  .banner__inner {
+    padding: 22px 16px;
+  }
+}

@@ -1,0 +1,185 @@
+/* Bento-style Profile section: soft grey tiles on a 12-column grid. Fonts: Lato for the big text,
+   Cantarell (inherited body font) for everything else — nothing else. */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.bento__tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 28px;
+  border-radius: 22px;
+  color: #18181b;
+  overflow: hidden;
+  /* A little shine: a bright highlight along the top edge, plus a soft light band (part of the
+     background, so it sits behind the text) parked off the left that sweeps across on hover. */
+  background-color: #f4f4f5;
+  background-image: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgb(255 255 255 / 0.75) 50%,
+    transparent 60%
+  );
+  background-size: 260% 100%;
+  background-repeat: no-repeat;
+  background-position: 100% 0;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.95);
+  /* Leaving: no sweep — the band jumps straight back to its hidden start (off the right edge to off
+     the left), so it isn't seen sweeping back. Otherwise the tile you left sweeps back while the one
+     you entered sweeps in, and you see two shines. */
+  transition: background-color 200ms ease;
+}
+
+/* Entering: the one visible sweep, left to right. */
+.bento__tile:hover {
+  background-position: 0% 0;
+  transition:
+    background-position 1.1s cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 200ms ease;
+}
+
+/* Small grey label above each tile's content (Cantarell, regular weight). */
+.bento__label {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #71717a;
+}
+
+/* Big text (Lato). */
+.bento__big,
+.bento__link {
+  font-family: var(--font-lato), sans-serif;
+  font-weight: 700;
+  color: #18181b;
+}
+
+/* Row 1: GitHub / LinkedIn | Let's connect! + email | © + credit */
+.bento__socials {
+  grid-column: span 3;
+  justify-content: center;
+}
+
+.bento__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em; /* logo, then the name */
+  width: fit-content;
+  font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+  line-height: 1.3;
+  transition: opacity 150ms ease;
+}
+
+.bento__link:hover {
+  opacity: 0.6;
+}
+
+.bento__talk {
+  grid-column: span 6;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 130px;
+  /* No transition override here: the shared .bento__tile transition animates both the shine sweep
+     and the background colour (overriding it made the sweep jump instead of animate). */
+}
+
+.bento__talk:hover {
+  background-color: #ececee;
+}
+
+.bento__big {
+  font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+  word-break: break-word;
+}
+
+.bento__credit {
+  grid-column: span 3;
+  justify-content: center;
+}
+
+.bento__small {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #71717a;
+}
+
+/* Live local time (tabular digits so the width doesn't jump as minutes change). */
+.bento__time {
+  font-variant-numeric: tabular-nums;
+  color: #3f3f46;
+}
+
+/* Row 2: Spotify | collages */
+.bento__spotify {
+  grid-column: span 5;
+}
+
+.bento__player {
+  width: 100%;
+  height: 152px;
+  border: 0;
+  border-radius: 12px;
+}
+
+.bento__collages {
+  grid-column: span 7;
+}
+
+.bento__collage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.bento__collage {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bento__tile:hover {
+    background-position: 100% 0; /* no sweep */
+    transition: background-color 200ms ease;
+  }
+}
+
+/* Grey stand-ins until real content is added. */
+.bento__placeholder {
+  background: #e4e4e7;
+}
+
+.bento__placeholder--player {
+  display: grid;
+  place-items: center;
+  height: 152px;
+  border-radius: 12px;
+  color: #71717a;
+  font-size: 0.95rem;
+}
+
+/* Narrow screens: one tile per row. */
+@media (max-width: 900px) {
+  .bento__socials,
+  .bento__talk,
+  .bento__credit,
+  .bento__spotify,
+  .bento__collages {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 640px) {
+  .bento__tile {
+    padding: 20px 20px;
+    border-radius: 18px;
+  }
+}
