@@ -22,7 +22,8 @@ body {
   overflow-x: clip; /* the hero stickers overhang the photo; never let them cause sideways scroll */
   background: var(--bg);
   color: var(--fg);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Body text (subtitles, paragraphs, UI) in Cantarell; headings switch to Lato below. */
+  font-family: var(--font-sans), "Cantarell", sans-serif;
   line-height: 1.6;
 }
 
@@ -32,6 +33,21 @@ body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
+}
+
+/* Titles in Lato. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-lato), system-ui, sans-serif;
+}
+
+/* Form controls don't inherit fonts by default; make buttons and inputs use Lato too. */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 a {
@@ -74,11 +90,12 @@ a {
   }
 }
 
+/* Sections are as tall as their content (only the hero fills the screen), so short sections like
+   Experience and Contact don't leave big empty gaps. */
 .section {
-  min-height: 100vh;
   max-width: 900px;
   margin: 0 auto;
-  padding: 56px 24px; /* was 96px when a 64px top nav sat above the content */
+  padding: 48px 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -90,7 +107,7 @@ a {
 }
 
 .section p {
-  color: var(--muted);
+  color: #4a4a4a; /* slightly darker than --muted (#666) so subtitles read more clearly */
   max-width: 60ch;
 }
 
@@ -105,13 +122,16 @@ a {
   position: relative;
   isolation: isolate; /* keeps the backdrop's negative z-index inside this block */
   flex-shrink: 0;
-  width: min(340px, 100%);
+  /* Scales with the screen height so the whole hero (photo + stickers overhanging ~16% above and
+     below) fits in one screen: height available ≈ 100svh minus ~230px of padding/dock room, divided
+     by 1.32 for the overhang, times 0.75 for the 3:4 frame. Clamped to 220–360px wide. */
+  width: min(100%, clamp(220px, calc((100svh - 230px) * 0.57), 360px));
 }
 
 /* Group 4 "paper" shape behind the photo, turned 90°. The SVG is 1038×643, so after rotating,
    its on-screen width is the element's height: width 210% → height ≈ 130% of the frame width. */
 .hero-photo__backdrop {
-  display: none;  /*TEMP: Group 4 hidden — delete this line to bring it back */
+   display: none;/*TEMP: ; Group 4 hidden — delete this line to bring it back */
   position: absolute;
   z-index: -1;
   top: 50%;
@@ -253,14 +273,15 @@ a {
 }
 
 .hero {
+  min-height: 100vh;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 48px;
-  /* Centre the hero in the space above the dock (which covers ~120px at the bottom),
-     so it sits higher than true centre. The top still leaves room for the stickers. */
-  padding-top: 72px;
-  padding-bottom: 200px;
+  gap: clamp(32px, 5vw, 80px);
+  /* Centre the hero in the space above the dock (which covers ~120px at the bottom), so it sits a
+     little higher than true centre. The top still leaves room for the stickers. */
+  padding-top: 64px;
+  padding-bottom: 150px;
 }
 
 /* The text block is centred in its column as a whole (the grid track shrinks to the widest
@@ -291,25 +312,18 @@ a {
   }
 }
 
-.button {
-  align-self: flex-start;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 600;
-}
-
-.button:hover {
-  opacity: 0.9;
+/* Last section: extra bottom room so the fixed dock never covers the Profile tiles. */
+#profile {
+  padding-bottom: 160px;
 }
 
 /* Full-bleed section (Projects): spans the whole screen with a small gutter at the edges. */
 .section--wide {
   max-width: none;
-  /* Scales with the screen: 24px on small laptops up to 96px on wide monitors. */
-  padding-left: clamp(24px, 6vw, 96px);
-  padding-right: clamp(24px, 6vw, 96px);
+  /* One-sixth of the screen on each side, so the content (and each row of project cards)
+     spans the middle two-thirds of the screen. */
+  padding-left: max(32px, calc(100vw / 6));
+  padding-right: max(32px, calc(100vw / 6));
 }
 
 @media (max-width: 640px) {
@@ -319,99 +333,98 @@ a {
   }
 }
 
-/* Projects: two per row, one on narrow screens. */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+/* Intro statement (ScrollReveal): large text that fades in word by word as it scrolls into view. */
+/* Sits right under the hero, without a full-screen height of its own, pulled up into the
+   hero's bottom padding. */
+.statement {
+  align-items: center;
+  min-height: auto;
+  padding-top: 0;
+  margin-top: -80px;
+}
+
+.section .scroll-reveal-text {
+  font-family: var(--font-lato), system-ui, sans-serif;
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  color: var(--fg);
+  max-width: 36ch;
+}
+
+/* Near-transparent glass panel behind the Experience timeline: a gentle distortion (Chrome/Edge),
+   almost no white tint, and a thin edge so you can see where it is. It extends 48px past the column on each side and pads its
+   content by the same amount, so the timeline stays lined up with the heading above. */
+.experience-glass {
+  width: calc(100% + 96px) !important; /* overrides the component's inline width */
+  margin-inline: -48px;
+}
+
+/* Chrome / Edge: just the gentle SVG distortion, no blur — the dots are under 2px, so even a light
+   blur smears them until they almost vanish. Almost no tint. */
+.experience-glass.glass-surface--svg {
+  backdrop-filter: var(--filter-id) saturate(var(--glass-saturation, 1));
+  border: 1px solid rgb(255 255 255 / 0.8);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    inset 0 12px 24px -12px rgb(255 255 255 / 0.6),
+    0 2px 6px rgb(17 17 26 / 0.05),
+    0 16px 40px rgb(17 17 26 / 0.07);
+}
+
+/* Safari / Firefox (no SVG distortion): the same light tint and rim, with only a hint of blur so
+   the dots still show through. */
+.experience-glass.glass-surface--fallback {
+  background: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(0.6px);
+  -webkit-backdrop-filter: blur(0.6px);
+  border: 1px solid rgb(255 255 255 / 0.8);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    inset 0 12px 24px -12px rgb(255 255 255 / 0.6),
+    0 2px 6px rgb(17 17 26 / 0.05),
+    0 16px 40px rgb(17 17 26 / 0.07);
+}
+
+/* No diagonal highlight — just the blur. (Two classes so it beats the component's own
+   .glass-surface::after, whose stylesheet loads after this one.) */
+.glass-surface.experience-glass::after {
+  content: none;
+}
+
+/* Its content lays out normally (not centred). */
+.experience-glass .glass-surface__content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 44px 48px;
 }
 
 @media (max-width: 640px) {
-  .grid {
-    grid-template-columns: 1fr;
+  /* Phones: no room to overhang the edges, so the panel sits inside the column. */
+  .experience-glass {
+    width: 100% !important;
+    margin-inline: 0;
+  }
+
+  .experience-glass .glass-surface__content {
+    padding: 28px 20px;
   }
 }
 
-.card {
-  padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--card);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* "Projects" and "Experience" headings at the same size as the hero's "Hi, I'm Avery." */
+#projects > h2,
+#experience > h2,
+#profile > h2 {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  line-height: 1.1;
 }
 
-/* Experience: a vertical timeline, one card per role with a dot on the line. */
-.timeline {
-  list-style: none;
-  display: grid;
-  gap: 16px;
-  padding-left: 20px;
-  border-left: 2px solid var(--border);
-}
-
-.timeline__item {
-  position: relative;
-  padding: 16px 20px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--card);
-}
-
-.timeline__item::before {
-  content: "";
-  position: absolute;
-  top: 22px;
-  left: -28px; /* centred on the line: 20px padding + 1px line half + 7px dot half */
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 3px var(--bg);
-}
-
-.timeline__head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 4px 16px;
-}
-
-.timeline__head h3 {
-  font-size: 1.05rem;
-}
-
-.timeline__org {
-  font-weight: 400;
-  color: var(--muted);
-}
-
-.timeline__dates {
-  font-size: 0.85rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.timeline__points {
-  margin-top: 8px;
-  padding-left: 18px;
-  color: var(--muted);
-}
-
-/* Trivia: fun facts as a simple card list. */
-.trivia {
-  list-style: none;
-  display: grid;
-  gap: 12px;
-}
-
-.trivia li {
-  padding: 16px 20px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--card);
+/* The animated headings (SplitText) clip their box to hide the rising letters; a little room below
+   keeps descenders (the "j" in Projects, "p" in Experience) from being cut off. */
+#projects > h2.split-parent,
+#experience > h2.split-parent {
+  padding-bottom: 0.12em;
 }
 
 /* Project filter: chips + a live count. */
@@ -438,104 +451,35 @@ a {
   font-size: 0.9rem;
 }
 
-/* Cards: dimmed when outside the chosen category. */
-.project-card {
-  padding: 0;
-  gap: 0;
-  overflow: hidden;
-  transition: opacity 300ms ease;
-}
 
-.project-card[data-dim] {
-  opacity: 0.4;
-}
 
-/* Cover image runs edge to edge; the text below has tighter side padding than other cards. */
-.project-card__media {
-  aspect-ratio: 16 / 9;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--c1) 30%, #fff),
-    color-mix(in srgb, var(--c2) 30%, #fff)
-  );
+/* Loading screen (LoadingScreen.tsx) — covers everything until the page is ready. */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
   display: grid;
   place-items: center;
+  padding: 24px 16px;
+  background: var(--bg);
+  color: var(--fg);
+  transition: opacity 500ms ease; /* = FADE_MS in LoadingScreen.tsx */
 }
 
-.project-card__media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.loader[data-leaving] {
+  opacity: 0;
+  pointer-events: none;
 }
 
-.project-card__placeholder {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: color-mix(in srgb, var(--c1) 70%, #18181b);
-  opacity: 0.8;
+/* On narrow screens the long line wraps instead of running off the edge. */
+@media (max-width: 640px) {
+  .loader .thought-line__head,
+  .loader .thought-line__steps {
+    white-space: normal;
+  }
+
+  .loader .thought-line__text,
+  .loader .thought-line__steps {
+    width: auto;
+  }
 }
-
-.project-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 16px 18px 20px;
-}
-
-/* Bigger type to match the larger showcase cards. */
-.project-card h3 {
-  font-size: clamp(1.2rem, 1.6vw, 1.6rem);
-}
-
-.project-card__body > p {
-  font-size: 1.02rem;
-  max-width: none;
-}
-
-.project-card__cats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.project-card__cat {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  padding: 2px 8px;
-  border-radius: 999px;
-  color: var(--cat);
-  background: color-mix(in srgb, var(--cat) 12%, transparent);
-  transition:
-    background-color 300ms ease,
-    color 300ms ease;
-}
-
-.project-card__cat[data-on] {
-  color: #fff;
-  background: var(--cat);
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.tag {
-  font-size: 0.8rem;
-  padding: 2px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  color: var(--muted);
-}
-
-.footer {
-  text-align: center;
-  padding: 32px 32px 128px; /* bottom room so the dock doesn't cover it */
-  color: var(--muted);
-  border-top: 1px solid var(--border);
-}
-
-

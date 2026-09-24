@@ -65,7 +65,7 @@ export default function HeroPhoto() {
         key={photo.src}
         status={status}
         aspectRatio="3 / 4"
-        width={340}
+        width={360} // max; the .hero-photo wrapper sets the actual size (fits the screen height)
         radius={20}
         labels={{ generating: "Loading", refining: "Sharpening", complete: "Photo of Avery generated!" }}
         stageDuration={STAGE_MS}

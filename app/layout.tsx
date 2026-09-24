@@ -1,7 +1,26 @@
 import type { Metadata } from "next";
+import { Cantarell, Lato } from "next/font/google";
 import ClickSpark from "./components/ClickSpark";
 import DotField from "./components/DotField";
+import LoadingScreen from "./components/LoadingScreen";
 import "./globals.css";
+
+// Two fonts, both self-hosted by Next.js (downloaded at build time, no request to Google at
+// runtime): Lato for titles/headings, Cantarell (--font-sans) for everything else.
+const lato = Lato({
+  subsets: ["latin"],
+  weight: ["300", "400", "700", "900"],
+  display: "swap",
+  variable: "--font-lato",
+});
+
+// Cantarell only comes in 400 and 700.
+const cantarell = Cantarell({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
   title: "My Portfolio",
@@ -10,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${lato.variable} ${cantarell.variable}`}>
       <body>
         <div className="page-bg" aria-hidden="true">
           <DotField
@@ -20,8 +39,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             glowRadius={0}
             cursorRadius={300}
             cursorForce={0.01}
+            /* Previous dot colours:
             gradientFrom="#69646d"
-            gradientTo="#ba7d9b"
+            gradientTo="#ba7d9b" */
+            gradientFrom="#87838a" /* ~20% lighter */
+            gradientTo="#c897af"
             holographic
             holoRadius={180}
             holoStars
@@ -33,7 +55,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           />
         </div>
         {children}
-        <ClickSpark sparkSize={18} sparkRadius={42} sparkCount={12} duration={600} lineWidth={2.5} />
+        <LoadingScreen />
+        <ClickSpark sparkSize={18} sparkRadius={42} sparkCount={12} duration={600} lineWidth={1.5} />
       </body>
     </html>
   );
