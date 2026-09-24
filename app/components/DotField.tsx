@@ -203,7 +203,9 @@ const DotField = memo(function DotField({
       const cols = Math.floor(w / step);
       const rows = Math.floor(h / step);
       const padX = (w % step) / 2;
-      const padY = (h % step) / 2;
+      // In scroll mode rows are pinned to the top of the page (not centred on its height), so
+      // their positions stay put as content changes and other elements can line up with them.
+      const padY = p.scrollWithPage ? 0 : (h % step) / 2;
       const dots: Dot[] = new Array(rows * cols);
       let idx = 0;
       const taken = new Set<number>();
@@ -249,6 +251,11 @@ const DotField = memo(function DotField({
       }
       dotsRef.current = dots;
       gridRef.current = { cols, rows, step, padY };
+      // Publish the row geometry (page coordinates) for DotSnapText.
+      const rootStyle = document.documentElement.style;
+      rootStyle.setProperty("--dot-step", String(step));
+      rootStyle.setProperty("--dot-offset", String(padY + step / 2));
+      window.dispatchEvent(new Event("dotgrid"));
     }
 
     // Measure against the live viewport rect so this stays correct when the field is
