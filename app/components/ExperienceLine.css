@@ -1,0 +1,275 @@
+/* Vertical, time-scaled experience timeline. --effect (0..1) is eased per role in JS
+   (LineSidebar-style), so every property that reads it moves in step. */
+.xl {
+  --accent-color: #18181b; /* monochrome: highlights darken instead of changing colour */
+  --text-color: #27272a;
+  --line-color: #a1a1aa;
+  --max-shift: 14px;
+  --axis-x: 96px; /* room on the left for the tick labels */
+  --role-marker: 44px; /* positions: long horizontal markers, all the same length */
+  --tick: 10px; /* 4-month ticks: short markers */
+  --label-width: 220px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 28px 0 8px;
+  container-type: inline-size; /* the pop-out sizes itself from this width */
+  /* A soft halo in the page colour around every letter, so the dot field (and hover stars) fade out
+     right around the text instead of showing through it. Inherited by all the timeline's text. */
+  text-shadow:
+    0 0 2px var(--bg),
+    0 0 4px var(--bg),
+    0 0 8px var(--bg),
+    0 0 12px var(--bg);
+}
+
+.xl__track {
+  position: relative;
+  min-height: 200px;
+}
+
+/* The axis: vertical, only as long as the time range. */
+.xl__axis {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--axis-x);
+  width: 1px;
+  background: var(--line-color);
+}
+
+/* 4-month ticks pointing left, with their month label on the left. */
+.xl__tick {
+  position: absolute;
+  left: calc(var(--axis-x) - var(--tick));
+  width: var(--tick);
+  height: 1px;
+  background: var(--line-color);
+  transform: translateY(-50%);
+}
+
+.xl__tick-label {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-sans), "Cantarell", sans-serif; /* body font (Cantarell), not monospace */
+  font-size: 0.82rem;
+  color: #52525b;
+  white-space: nowrap;
+}
+
+/* "Now": the top of the timeline, a longer, darker tick with a bold label. */
+.xl__tick[data-now] {
+  left: calc(var(--axis-x) - var(--tick) * 2);
+  width: calc(var(--tick) * 2);
+  background: #27272a;
+}
+
+.xl__tick[data-now] .xl__tick-label {
+  font-weight: 700;
+  color: #18181b;
+}
+
+/* The selected position's duration, drawn along the axis. Animates between positions. */
+.xl__span {
+  position: absolute;
+  left: calc(var(--axis-x) - 2px);
+  width: 5px;
+  border-radius: 999px;
+  background: var(--accent-color);
+  transition:
+    top 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    height 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Still going: fade out at the top (most recent) end instead of a hard stop. */
+.xl__span[data-ongoing] {
+  -webkit-mask-image: linear-gradient(0deg, #000 70%, transparent);
+  mask-image: linear-gradient(0deg, #000 70%, transparent);
+  border-radius: 0 0 999px 999px;
+}
+
+.xl__roles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* A role sits at its start date on the axis. */
+.xl__role {
+  position: absolute;
+  left: var(--axis-x);
+}
+
+/* Widen the pointer target a little (over the label, which sits above the marker). */
+.xl__role::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -12px;
+  width: calc(var(--role-marker) + var(--label-width));
+  height: 110px;
+}
+
+/* Position marker: a longer line pointing right from the axis at the start date, with a node. */
+.xl__marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--role-marker);
+  height: 1px;
+  background: color-mix(in srgb, var(--accent-color) calc(var(--effect, 0) * 100%), var(--line-color));
+  transform-origin: left center;
+  transform: scaleX(calc(0.85 + var(--effect, 0) * 0.15));
+}
+
+.xl__marker::before {
+  content: "";
+  position: absolute;
+  top: -3.5px;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-color) calc(var(--effect, 0) * 100%), var(--line-color));
+  box-shadow: 0 0 0 3px var(--bg);
+}
+
+/* Label at the end of the marker, sitting above it (over the role's own span). Proximity eases it
+   right, like the original sidebar. */
+.xl__label {
+  position: absolute;
+  bottom: -10px;
+  left: calc(var(--role-marker) + 12px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: max-content;
+  max-width: var(--label-width);
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--accent-color) calc(var(--effect, 0) * 100%), var(--text-color));
+  transform: translateX(calc(var(--effect, 0) * var(--max-shift)));
+}
+
+.xl__label:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+
+.xl__date {
+  font-family: var(--font-sans), "Cantarell", sans-serif; /* body font (Cantarell), not monospace */
+  font-size: 0.9rem;
+  white-space: nowrap;
+  opacity: calc(0.6 + var(--effect, 0) * 0.4);
+}
+
+/* Same size as the project strip titles. */
+.xl__title {
+  font-family: var(--font-lato), system-ui, sans-serif;
+  font-size: clamp(1.3rem, 1.8vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Company name under the title. */
+.xl__company {
+  font-size: 1rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--accent-color) calc(var(--effect, 0) * 60%), #52525b);
+}
+
+/* Responsibilities popping out beside the selected title (wide screens). Anchored to the label's
+   bottom like the label itself, and sliding in from the left each time the selection changes. */
+.xl__pop {
+  position: absolute;
+  bottom: -10px;
+  left: calc(var(--role-marker) + 12px + var(--label-width) + 32px);
+  /* Fill the rest of the timeline's width after everything to the pop's left
+     (axis + marker + label + gaps ≈ 404px). */
+  width: min(520px, calc(100cqi - 404px));
+  animation: xl-pop 450ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes xl-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+/* Narrow screens: the details sit under the timeline instead. */
+.xl__detail {
+  animation: xl-in 300ms ease both;
+}
+
+/* The details' box, in the page's background colour (--bg, #fafafa): starts at the light grey line on the left and fades to transparent
+   towards the right, so it blends into the dot field instead of ending in a hard edge. */
+.xl__pop,
+.xl__detail {
+  padding: 14px 32px 16px 20px;
+  border-left: 2px solid #d4d4d8;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--bg) 90%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 82%, transparent) 45%,
+    color-mix(in srgb, var(--bg) 0%, transparent) 100%
+  );
+}
+
+@keyframes xl-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* Details text sits on the dot rows: every line is exactly two rows tall and every gap is exactly
+   one row (--dot-step comes from DotField), so once the first line is snapped onto a row (in JS),
+   all of them are. */
+.xl__pop,
+.xl__detail {
+  --row: calc(var(--dot-step, 11.7) * 1px);
+}
+
+.section .xl__org {
+  font-size: 1.02rem;
+  line-height: calc(var(--row) * 2);
+  color: #3f3f46;
+}
+
+.xl__points {
+  display: grid;
+  gap: var(--row);
+  margin: var(--row) 0 0;
+  padding-left: 18px;
+  font-size: 1rem;
+  line-height: calc(var(--row) * 2);
+  color: #27272a;
+}
+
+/* Narrow screens: details go under the timeline. */
+@media (max-width: 760px) {
+  .xl {
+    --axis-x: 80px;
+    --role-marker: 28px;
+    --label-width: 170px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xl__span {
+    transition: none;
+  }
+
+  .xl__detail,
+  .xl__pop {
+    animation: none;
+  }
+}
