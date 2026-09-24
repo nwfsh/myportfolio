@@ -8,9 +8,10 @@ const LABEL = "Creating a website that would make you wanna hire me so bad";
 const DONE_LABEL = "Made it in"; // becomes "Made it in 2.4s" once it settles
 // Shown one at a time beneath the line; the last one is "in progress", earlier ones get a tick.
 const STEPS = [
-  "Placeholder step one",
-  "Placeholder step two",
-  "Placeholder step three",
+    
+  "Creating a personal website that makes you wanna hire me so bad.",
+  "Hypnothizing you to move my application to the next stage.",
+  // "Giving it my best shot.",
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -25,11 +26,12 @@ export default function LoadingScreen() {
   const [shown, setShown] = useState(1);
   const [pageReady, setPageReady] = useState(false);
   const [phase, setPhase] = useState<"working" | "leaving" | "gone">("working");
-  const working = !(pageReady && shown >= STEPS.length);
+  // shown goes one past the list so the last step also gets its STEP_MS as "in progress".
+  const working = !(pageReady && shown > STEPS.length);
 
   // Reveal the steps one at a time.
   useEffect(() => {
-    if (shown >= STEPS.length) return;
+    if (shown > STEPS.length) return;
     const id = setTimeout(() => setShown((n) => n + 1), STEP_MS);
     return () => clearTimeout(id);
   }, [shown]);
