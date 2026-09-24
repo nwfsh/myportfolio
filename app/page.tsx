@@ -94,13 +94,13 @@ export default function Home() {
                       wordAnimationEnd="bottom 75%"
                       blurAnimationEnd="bottom 55%"
                   >
-                      I'm obsessed with social media and all the data behind it.
-                      I love taking messy stuff (comments, posts, videos, and
-                      random internet chatter), organizing it neatly, and
-                      building algorithms and models that help computers make
-                      sense of it almost like a human would. I'm curious on how
-                      this technology would make the world safer, and
-                      experiences more personalised!
+                      I'm interested in taking messy data (comments, posts,
+                      videos, and random internet chatter), organizing it
+                      neatly, and building algorithms and models that help
+                      computers make sense of it almost like a human would.
+                      Social media is where I find the most interesting
+                      examples, and I'm curious about how this technology can
+                      make the world safer and experiences more personalized!
                   </ScrollReveal>
               </section>
 
@@ -160,7 +160,6 @@ export default function Home() {
                   {/* <ProfileBanner /> — full-width banner version, hidden for now */}
               </section>
           </main>
-
       </>
   );
 }
