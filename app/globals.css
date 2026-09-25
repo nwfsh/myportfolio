@@ -451,6 +451,26 @@ a {
   font-size: 0.9rem;
 }
 
+/* Pitch <-> Technical switch, at the end of the filter row. The side that's showing is darker. */
+.project-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  font-size: 0.9rem;
+}
+
+.project-view > span {
+  color: #a1a1aa;
+  cursor: pointer;
+  user-select: none;
+  transition: color 200ms ease;
+}
+
+.project-view > span[data-on] {
+  color: #18181b;
+}
+
 
 
 /* Loading screen (LoadingScreen.tsx) — covers everything until the page is ready. */

@@ -25,6 +25,8 @@ type Props = {
   stagger?: number;
   trigger?: "hover" | "click";
   grayscale?: boolean;
+  /** Which write-up each strip shows. "technical" falls back to the pitch where there is none. */
+  view?: "pitch" | "technical";
 };
 
 const labelOf = (id: string) => CATEGORIES.find((c) => c.id === id)?.label ?? id;
@@ -43,6 +45,7 @@ export default function ProjectAccordion({
   stagger = 0.06,
   trigger = "hover",
   grayscale = true,
+  view = "pitch",
 }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -250,7 +253,24 @@ export default function ProjectAccordion({
                   detailRefs.current[i] = el;
                 }}
               >
-                <p>{p.description}</p>
+                {/* Keyed inner span: the new text fades in when the switch flips (the <p> itself
+                    stays, since GSAP owns its opacity). */}
+                <p>
+                  <span key={view} className="pa-desc">
+                    {view === "technical" && p.technical ? p.technical : p.description}
+                  </span>
+                </p>
+                {/* Wins dropdown, closed by default. */}
+                {p.wins?.length ? (
+                  <details className="pa-drop pa-drop--small">
+                    <summary>Wins</summary>
+                    <ul>
+                      {p.wins.map((w) => (
+                        <li key={w}>{w}</li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : null}
                 <div className="pa-meta">
                   {p.kind ? <span className="pa-kind">{p.kind}</span> : null}
                   {p.categories.map((c) => (
@@ -260,6 +280,14 @@ export default function ProjectAccordion({
                   ))}
                   {p.status ? <span className="pa-badge pa-badge--status">{p.status}</span> : null}
                 </div>
+                {/* The spark: pitch view only. Hidden rather than removed in technical view, since
+                    GSAP owns the opacity of these children. */}
+                {p.spark ? (
+                  <details className="pa-drop pa-drop--spark" hidden={view !== "pitch"}>
+                    <summary>The Spark</summary>
+                    <p>{p.spark}</p>
+                  </details>
+                ) : null}
               </div>
             </div>
 
@@ -280,6 +308,16 @@ export default function ProjectAccordion({
                     playsInline
                     preload="auto"
                     aria-label={`${p.title} demo`}
+                    // Size the box to this clip's own shape so none of it is cropped.
+                    onLoadedMetadata={(e) => {
+                      const v = e.currentTarget;
+                      if (v.videoWidth && v.videoHeight) {
+                        v.closest<HTMLElement>(".pa-side")?.style.setProperty(
+                          "--pa-video-ar",
+                          `${v.videoWidth} / ${v.videoHeight}`,
+                        );
+                      }
+                    }}
                   />
                 </div>
               </div>

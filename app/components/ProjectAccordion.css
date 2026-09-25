@@ -259,6 +259,107 @@
   font-size: 1.02rem;
 }
 
+/* Pitch/Technical swap: the new text fades in. */
+.pa-desc {
+  animation: pa-desc-in 300ms ease;
+}
+
+@keyframes pa-desc-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-desc {
+    animation: none;
+  }
+}
+
+/* "Wins" dropdown under the pitch: a label with a chevron that turns when open, then a list. */
+.pa-drop summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-lato), system-ui, sans-serif; /* a title, so Lato */
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #52525b;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.pa-drop summary::-webkit-details-marker {
+  display: none;
+}
+
+.pa-drop summary::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 200ms ease;
+}
+
+.pa-drop[open] summary::before {
+  transform: rotate(45deg);
+}
+
+.pa-drop summary:hover {
+  color: #18181b;
+}
+
+.section .pa-details .pa-drop p,
+.pa-drop ul {
+  margin: 8px 0 0;
+  font-size: 0.92rem;
+  color: #52525b;
+}
+
+.pa-drop ul {
+  padding-left: 1.1em;
+}
+
+/* The spark: a quiet fun-fact aside, well smaller and lighter than the pitch. */
+.pa-drop--spark summary {
+  font-size: 0.72rem; /* not in caps, so a touch larger than the caps labels to stay legible */
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #b4b4bb;
+}
+
+.pa-drop--spark summary:hover {
+  color: #71717a;
+}
+
+.section .pa-details .pa-drop--spark p {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #a1a1aa;
+}
+
+/* Wins: small. */
+.pa-drop--small summary {
+  font-size: 0.7rem;
+}
+
+.section .pa-details .pa-drop--small ul {
+  font-size: 0.86rem;
+}
+
+/* An opened dropdown can outgrow the strip; the text column scrolls instead of being cut off. */
+.pa-panel--active .pa-content {
+  max-height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
 .pa-tags {
   display: flex;
   flex-wrap: wrap;
@@ -274,7 +375,8 @@
 }
 
 /* Right column of a video strip: the stack, then a framed demo video. Hidden on closed strips;
-   the text column makes room for it. The video keeps the clip's 1280×736 shape so the whole
+   the text column makes room for it. The video keeps the clip's own shape (--pa-video-ar, set
+   from the video once it loads; 1280×736 until then) so the whole
    frame shows: as tall as the strip allows after 20px margins and ~64px for up to two rows of
    tags, unless that would pass 46% of the width; the column stays vertically centred. */
 .pa-side {
@@ -283,7 +385,7 @@
   top: 50%;
   right: 24px;
   transform: translateY(-50%);
-  width: min(46cqw, (100cqh - 40px - 64px) * 1280 / 736);
+  width: min(46cqw, (100cqh - 40px - 64px) * var(--pa-video-ar, 1280 / 736));
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -297,7 +399,7 @@
 }
 
 .pa-video {
-  aspect-ratio: 1280 / 736;
+  aspect-ratio: var(--pa-video-ar, 1280 / 736);
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid var(--border);
