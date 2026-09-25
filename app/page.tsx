@@ -75,7 +75,7 @@ export default function Home() {
                       </h1>
                       <DotSnapText>
                           I&apos;m a 3rd-year CS student at the University of
-                          British Columbia with a love for data, AI, and ML.
+                          British Columbia and a full-stack developer with a love for data, AI, and ML.
                           Sometimes, I design.{" "}
                       </DotSnapText>
                   </div>
@@ -94,13 +94,13 @@ export default function Home() {
                       wordAnimationEnd="bottom 75%"
                       blurAnimationEnd="bottom 55%"
                   >
-                      I'm interested in taking messy data (comments, posts,
-                      videos, and random internet chatter), organizing it
-                      neatly, and building algorithms and models that help
-                      computers make sense of it almost like a human would.
-                      Social media is where I find the most interesting
-                      examples, and I'm curious about how this technology can
-                      make the world safer and experiences more personalized!
+                      I'm drawn to the messy, unstructured data that people create
+                      online. I yearn to organize data neatly, and build algorithms and
+                      models that help computers make sense of it almost like a
+                      human would. Social media is where this gets the most
+                      interesting to me, and I'm curious about how this
+                      technology can make our world safer and our experiences more
+                      personalized!
                   </ScrollReveal>
               </section>
 
