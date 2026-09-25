@@ -6,3 +6,6 @@ next-env.d.ts
 .DS_Store
 .env*.local
 node_modules
+
+# Raw video exports (converted copies live in data/ as *.mp4)
+data/export-*
