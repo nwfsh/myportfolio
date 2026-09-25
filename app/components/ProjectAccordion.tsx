@@ -182,6 +182,15 @@ export default function ProjectAccordion({
     >
       {items.map(({ project: p, dim, highlightCategory }, i) => {
         const isActive = i === active;
+        const tags = (
+          <div className="pa-tags">
+            {p.tags.map((t) => (
+              <span key={t} className="pa-tag">
+                {t}
+              </span>
+            ))}
+          </div>
+        );
         return (
           <div
             key={p.title}
@@ -233,13 +242,7 @@ export default function ProjectAccordion({
                 {p.award ? <span className="pa-badge">{p.award}</span> : null}
                 {p.date ? <span className="pa-date">{p.date}</span> : null}
               </div>
-              <div className="pa-tags">
-                {p.tags.map((t) => (
-                  <span key={t} className="pa-tag">
-                    {t}
-                  </span>
-                ))}
-              </div>
+              {tags}
               {/* Revealed on the open strip: description, then project type / categories. */}
               <div
                 className="pa-details"
@@ -260,20 +263,25 @@ export default function ProjectAccordion({
               </div>
             </div>
 
-            {/* Framed preview on the right of the strip (not the backdrop); shown when open. */}
+            {/* Right column on the open strip (not the backdrop): the stack above a framed preview.
+                The stack moves here from under the title when the strip opens. */}
             {p.video ? (
-              <div className="pa-video">
-                <video
-                  ref={(el) => {
-                    videoRefs.current[i] = el;
-                  }}
-                  src={p.video}
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  aria-label={`${p.title} demo`}
-                />
+              <div className="pa-side">
+                {tags}
+                <div className="pa-video">
+                  <video
+                    ref={(el) => {
+                      videoRefs.current[i] = el;
+                    }}
+                    src={p.video}
+                    poster={p.poster}
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    aria-label={`${p.title} demo`}
+                  />
+                </div>
               </div>
             ) : null}
           </div>

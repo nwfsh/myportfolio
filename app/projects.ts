@@ -26,6 +26,8 @@ export type Project = {
   // Optional preview video (muted; plays while its strip is hovered). Put an H.264 .mp4 in data/ and
   // use new URL("../data/name.mp4", import.meta.url).href so the bundler copies and fingerprints it.
   video?: string;
+  // First frame of the video, shown in the box until the video has loaded.
+  poster?: string;
   // Optional small badges shown next to the category labels.
   award?: string;
   status?: string;
@@ -46,6 +48,7 @@ export const PROJECTS: Project[] = [
     date: "Aug 2026",
     kind: "Personal project",
     video: new URL("../data/socurious.mp4", import.meta.url).href,
+    poster: new URL("../data/socurious-poster.jpg", import.meta.url).href,
     description:
       "An ETL pipeline that collects conversation-starter questions from Reddit, then filters, deduplicates, and classifies them. It uses sentence-embedding deduplication and a two-stage NLP classifier for topic and intimacy level.",
     categories: ["data", "ml-ai", "full-stack"],
@@ -74,6 +77,8 @@ export const PROJECTS: Project[] = [
     title: "TravelWrap",
     date: "Feb – Apr 2026",
     kind: "School project",
+    video: new URL("../data/travelwrap.mp4", import.meta.url).href,
+    poster: new URL("../data/travelwrap-poster.jpg", import.meta.url).href,
     description:
       "Spotify Wrapped, but for your travels. TravelWrap brings your trips, destinations, and spending together in one place so you can look back on where you've been.",
     categories: ["full-stack", "data"],

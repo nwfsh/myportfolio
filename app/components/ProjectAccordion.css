@@ -30,6 +30,8 @@
   box-shadow: 0 10px 30px -22px rgba(0, 0, 0, 0.35);
   will-change: flex-grow, transform;
   -webkit-tap-highlight-color: transparent;
+  /* Lets the video box size itself from the strip's height and width (cqh / cqw). */
+  container-type: size;
 }
 
 /* Iridescent light at the cursor. One hue slowly cycles (registered with @property so gradients
@@ -158,7 +160,12 @@
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--ag-overlay) 70%, transparent) 0%, transparent 75%),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ag-overlay) 80%, transparent) 0%,
+      color-mix(in srgb, var(--ag-overlay) 80%, transparent) 40%,
+      transparent 100%
+    ),
     color-mix(in srgb, var(--ag-overlay) calc(var(--ag-dim, 0.35) * 100%), transparent);
 }
 
@@ -266,28 +273,36 @@
   color: #52525b;
 }
 
-/* Framed demo video on the right of the strip. Hidden on closed strips; the text column
-   makes room for it. Width follows from the height and the clip's 1280×736 shape. */
-.pa-video {
+/* Right column of a video strip: the stack, then a framed demo video. Hidden on closed strips;
+   the text column makes room for it. The video keeps the clip's 1280×736 shape so the whole
+   frame shows: as tall as the strip allows after 20px margins and ~64px for up to two rows of
+   tags, unless that would pass 46% of the width; the column stays vertically centred. */
+.pa-side {
   position: absolute;
   z-index: 1;
-  top: 20px;
-  bottom: 20px;
+  top: 50%;
   right: 24px;
-  aspect-ratio: 1280 / 736;
-  max-width: 46%;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  background: #fff;
-  box-shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.35);
+  transform: translateY(-50%);
+  width: min(46cqw, (100cqh - 40px - 64px) * 1280 / 736);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   opacity: 0;
   transition: opacity 300ms ease;
   pointer-events: none;
 }
 
-.pa-panel--active .pa-video {
+.pa-panel--active .pa-side {
   opacity: 1;
+}
+
+.pa-video {
+  aspect-ratio: 1280 / 736;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.35);
 }
 
 .pa-video video {
@@ -310,6 +325,22 @@
   max-width: 52%;
 }
 
+/* The stack under the title folds away as a video strip opens (it reappears above the video). */
+.pa-panel[data-has-video] .pa-content > .pa-tags {
+  max-height: 80px;
+  overflow: hidden;
+  transition:
+    opacity 300ms ease,
+    max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    margin-top 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.pa-panel--active[data-has-video] .pa-content > .pa-tags {
+  opacity: 0;
+  max-height: 0;
+  margin-top: -12px; /* cancel the column gap it leaves behind */
+}
+
 /* Phones: no accordion — every project is a full card in a plain list. */
 @media (max-width: 640px) {
   .project-accordion {
@@ -320,6 +351,7 @@
   .pa-panel {
     flex: none !important;
     transform: none !important;
+    container-type: normal;
   }
 
   .pa-details > * {
@@ -332,14 +364,24 @@
     max-width: none;
   }
 
-  .pa-video {
+  .pa-side {
     position: relative;
     inset: auto;
-    display: block;
+    transform: none;
     width: auto;
-    max-width: none;
     margin: 0 28px 22px;
     opacity: 1;
+  }
+
+  /* Stack stays under the title here, so the side copy is hidden. */
+  .pa-side > .pa-tags {
+    display: none;
+  }
+
+  .pa-panel--active[data-has-video] .pa-content > .pa-tags {
+    opacity: 1;
+    max-height: none;
+    margin-top: 0;
   }
 }
 
