@@ -5,6 +5,8 @@
 // open strip reveals the description and stack. The image (or grey placeholder) is the backdrop.
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { gsap } from "gsap";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { PlayCircleIcon } from "@hugeicons/core-free-icons";
 import { CATEGORIES, type Project } from "../projects";
 import ProjectModal from "./ProjectModal";
 import { rich } from "./rich";
@@ -206,7 +208,8 @@ export default function ProjectAccordion({
             }}
             className={`pa-panel${isActive ? " pa-panel--active" : ""}`}
             data-dim={dim ? "" : undefined}
-            data-has-video={p.video ? "" : undefined}
+            // Every strip has the right-hand column now (a video, or a "coming soon" box).
+            data-has-video=""
             onMouseEnter={() => {
               if (trigger === "hover") setActive(i);
               playVideo(i);
@@ -309,11 +312,12 @@ export default function ProjectAccordion({
               </div>
             </div>
 
-            {/* Right column on the open strip (not the backdrop): the stack above a framed preview.
-                The stack moves here from under the title when the strip opens. */}
-            {p.video ? (
-              <div className="pa-side">
-                {tags}
+            {/* Right column on the open strip (not the backdrop): the stack above a framed preview,
+                or a "coming soon" box for projects without a video yet. The stack moves here from
+                under the title when the strip opens. */}
+            <div className="pa-side">
+              {tags}
+              {p.video ? (
                 <div className="pa-video">
                   <video
                     ref={(el) => {
@@ -338,8 +342,13 @@ export default function ProjectAccordion({
                     }}
                   />
                 </div>
-              </div>
-            ) : null}
+              ) : (
+                <div className="pa-video pa-video--soon">
+                  <HugeiconsIcon icon={PlayCircleIcon} size={28} strokeWidth={1.5} />
+                  <span>Video demo coming soon</span>
+                </div>
+              )}
+            </div>
           </div>
         );
       })}
