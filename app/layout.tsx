@@ -3,6 +3,7 @@ import { Cantarell, Lato } from "next/font/google";
 import ClickSpark from "./components/ClickSpark";
 import DotField from "./components/DotField";
 import LoadingScreen from "./components/LoadingScreen";
+import SplashGate from "./components/SplashGate";
 import "./globals.css";
 
 // Two fonts, both self-hosted by Next.js (downloaded at build time, no request to Google at
@@ -54,7 +55,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             burstDuration={700}
           />
         </div>
-        {children}
+        {/* Page waits (hidden) until the splash is done, then starts fresh. */}
+        <SplashGate>{children}</SplashGate>
         <LoadingScreen />
         <ClickSpark sparkSize={18} sparkRadius={42} sparkCount={12} duration={600} lineWidth={1.5} />
       </body>
