@@ -165,6 +165,10 @@ const DotField = memo(function DotField({
     const ctx = canvas?.getContext("2d", { alpha: true });
     if (!canvas || !ctx) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Touch screens (no hover): a tap also fires a fake mouse move at that spot, which would
+    // switch on the hover star glow and leave it stuck there (the "mouse" never leaves). There,
+    // the field only reacts to taps themselves (the click bursts below), at full quality.
+    const touchOnly = window.matchMedia("(hover: none)").matches;
     let resizeTimer: ReturnType<typeof setTimeout> | undefined;
     const holoCanvas = document.createElement("canvas");
     const holoCtx = holoCanvas.getContext("2d");
@@ -261,6 +265,7 @@ const DotField = memo(function DotField({
     // Measure against the live viewport rect so this stays correct when the field is
     // position: fixed and the page scrolls underneath it.
     function onMouseMove(e: MouseEvent) {
+      if (touchOnly) return;
       const rect = canvas!.getBoundingClientRect();
       mouseRef.current.x = e.clientX - rect.left;
       mouseRef.current.y = e.clientY - rect.top;
