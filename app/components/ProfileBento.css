@@ -182,4 +182,16 @@
     padding: 20px 20px;
     border-radius: 18px;
   }
+
+  /* Phones: "Find me on" and "© Avery" side by side as a pair, "Let's connect!" full width
+     below them. */
+  .bento__socials,
+  .bento__credit {
+    grid-column: span 6;
+    padding: 18px 16px;
+  }
+
+  .bento__talk {
+    order: 1;
+  }
 }

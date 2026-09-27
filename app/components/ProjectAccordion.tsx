@@ -16,7 +16,7 @@ type Item = { project: Project; dim?: boolean; highlightCategory?: string };
 
 type Props = {
   items: Item[];
-  /** Changing this re-opens the first strip (used when the filter reorders the list). */
+  /** Changing this re-opens the first strip, or closes all on phones (used when the filter reorders the list). */
   resetKey?: string;
   height?: number;
   gap?: number;
@@ -93,9 +93,34 @@ export default function ProjectAccordion({
     videoRefs.current[i]?.pause();
   };
 
-  // A filter change reorders the strips; open the first (best-matching) one.
+  // Phones (no hover): the open card's video plays from the start, every other one pauses; then
+  // the opened card is scrolled into view, since closing the one above it shifts the page. Not on
+  // the first run, so loading the page doesn't jump down to the projects.
+  const tappedRef = useRef(false);
   useEffect(() => {
-    setActive(0);
+    if (!window.matchMedia("(max-width: 640px)").matches) return;
+    if (!tappedRef.current) {
+      tappedRef.current = true;
+      return;
+    }
+    videoRefs.current.forEach((v, idx) => {
+      if (!v) return;
+      if (idx === active && !reducedRef.current) {
+        v.currentTime = 0;
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
+    });
+    const panel = panelRefs.current[active];
+    if (panel) requestAnimationFrame(() => panel.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+  }, [active]);
+
+  // A filter change reorders the strips; open the first (best-matching) one.
+  // On load and on every filter change: desktop opens the first strip; phones start with every
+  // card closed, so a project only opens when it's tapped.
+  useEffect(() => {
+    setActive(window.matchMedia("(max-width: 640px)").matches ? -1 : 0);
   }, [resetKey]);
 
   const applyLayout = useCallback(
@@ -217,19 +242,31 @@ export default function ProjectAccordion({
             data-dim={dim ? "" : undefined}
             // Every strip has the right-hand column now (a video, or a "coming soon" box).
             data-has-video=""
-            onMouseEnter={() => {
+            // Hover is mouse only: on phones a tap also fires enter events, which would fight the
+            // tap-to-open below.
+            onPointerEnter={(e) => {
+              if (e.pointerType !== "mouse") return;
               if (trigger === "hover") setActive(i);
               playVideo(i);
             }}
-            onMouseLeave={() => pauseVideo(i)}
+            onPointerLeave={(e) => {
+              if (e.pointerType === "mouse") pauseVideo(i);
+            }}
             onMouseMove={(e) => {
               // Spotlight (from React Bits' SpotlightCard): the glow follows the cursor.
               const rect = e.currentTarget.getBoundingClientRect();
               e.currentTarget.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
               e.currentTarget.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
             }}
-            onClick={() => setActive(i)}
-            onFocus={() => setActive(i)}
+            onClick={() => {
+              // Phones: tap a card to open it, tap the open one again to close it.
+              if (window.matchMedia("(max-width: 640px)").matches && i === active) setActive(-1);
+              else setActive(i);
+            }}
+            // Keyboard focus opens a card; a tap's focus doesn't (the click above handles taps).
+            onFocus={(e) => {
+              if (e.currentTarget.matches(":focus-visible")) setActive(i);
+            }}
             onKeyDown={(e) => onKeyDown(i, e)}
             role="listitem"
             tabIndex={0}

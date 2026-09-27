@@ -263,6 +263,71 @@
   }
 }
 
+/* Phones: no time scale (roles close in time would pile up). A plain stacked list on a thin
+   rail: date, title, company per role; tapping one opens its details right under it. */
+@media (max-width: 640px) {
+  .xl__track {
+    height: auto !important;
+    min-height: 0;
+  }
+
+  .xl__axis,
+  .xl__tick,
+  .xl__span,
+  .xl__marker,
+  .xl__role::before {
+    display: none;
+  }
+
+  .xl__roles {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-left: 20px;
+    border-left: 1px solid var(--line-color);
+  }
+
+  .xl__role {
+    position: relative;
+    left: auto;
+    top: auto !important;
+  }
+
+  /* A node on the rail for each role; filled for the open one. */
+  .xl__role::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: -25px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1.5px solid var(--line-color);
+  }
+
+  .xl__role:has([aria-selected="true"])::after {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+  }
+
+  .xl__label {
+    position: static;
+    width: auto;
+    max-width: none;
+    transform: none;
+  }
+
+  .xl__title {
+    font-size: 1.25rem;
+  }
+
+  .xl__detail {
+    margin-top: 12px;
+    padding-right: 8px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .xl__span {
     transition: none;

@@ -107,6 +107,17 @@ export default function ExperienceLine({
     return () => mq.removeEventListener("change", sync);
   }, []);
 
+  // Phones: a plain stacked list (see ExperienceLine.css), with the details opening right under
+  // the tapped role instead of below the whole timeline.
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const sync = () => setPhone(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   const scale = useMemo(() => {
     if (now === null) return null;
     const spans = roles.map((r) => {
@@ -271,7 +282,8 @@ export default function ExperienceLine({
                     <span className="xl__company">{role.org}</span>
                   </button>
                   {/* Responsibilities pop out from the left, right beside the selected title. */}
-                  {wide && activeIndex === i ? <RoleDetails key={i} role={role} className="xl__pop" /> : null}
+                  {wide && activeIndex === i ? <RoleDetails key={`pop-${i}`} role={role} className="xl__pop" /> : null}
+                  {phone && activeIndex === i ? <RoleDetails key={`detail-${i}`} role={role} className="xl__detail" /> : null}
                 </li>
               ))}
             </ul>
@@ -279,7 +291,7 @@ export default function ExperienceLine({
         ) : null}
       </div>
 
-      {wide === false && active ? <RoleDetails key={activeIndex} role={active} className="xl__detail" /> : null}
+      {wide === false && !phone && active ? <RoleDetails key={activeIndex} role={active} className="xl__detail" /> : null}
     </div>
   );
 }

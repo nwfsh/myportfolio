@@ -481,7 +481,9 @@
   margin-top: -12px; /* cancel the column gap it leaves behind */
 }
 
-/* Phones: no accordion — every project is a full card in a plain list. */
+/* Phones: tap to open. Cards sit in a plain list showing title, date and stack; tapping one
+   opens its write-up, Read more and video (or "coming soon") under it and closes the others;
+   tapping the open one closes it. No GSAP sizing, 3D tilt or container sizing here. */
 @media (max-width: 640px) {
   .project-accordion {
     height: auto !important;
@@ -492,6 +494,13 @@
     flex: none !important;
     transform: none !important;
     container-type: normal;
+    cursor: pointer;
+  }
+
+  /* Closed cards: just the header row and stack. */
+  .pa-panel:not(.pa-panel--active) .pa-details,
+  .pa-panel:not(.pa-panel--active) .pa-side {
+    display: none;
   }
 
   .pa-details > * {
@@ -499,7 +508,23 @@
     transform: none !important;
   }
 
-  /* Video sits under the text, full width. */
+  /* A chevron after the date: points down when closed, up when open. */
+  .pa-head::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    margin-left: 4px;
+    border-right: 1.5px solid #71717a;
+    border-bottom: 1.5px solid #71717a;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 200ms ease;
+  }
+
+  .pa-panel--active .pa-head::after {
+    transform: translateY(2px) rotate(-135deg);
+  }
+
+  /* Text full width; the video (or placeholder) sits under it. */
   .pa-panel[data-has-video] .pa-content {
     max-width: none;
   }

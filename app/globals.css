@@ -490,6 +490,28 @@ a {
   color: #18181b;
 }
 
+/* Phones: the filter row stacks. Switch on its own line (no divider), chips wrap instead of
+   running off the screen, then the count. */
+@media (max-width: 640px) {
+  .project-filter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .project-view {
+    margin-right: 0;
+    padding-right: 0;
+    border-right: 0;
+  }
+
+  .project-filter .jelly-radio {
+    flex-wrap: wrap;
+    max-width: 100%;
+    row-gap: 8px;
+  }
+}
+
 
 
 /* Loading screen (LoadingScreen.tsx) — covers everything until the page is ready. */

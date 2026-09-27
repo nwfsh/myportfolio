@@ -164,7 +164,11 @@ const DotField = memo(function DotField({
     const glowEl = glowRef.current;
     const ctx = canvas?.getContext("2d", { alpha: true });
     if (!canvas || !ctx) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Phones: same effect, less work. Drawn at 1x resolution (tiny dots barely show the
+    // difference) and the frame loop sleeps whenever nothing is moving, waking on scroll, tap or
+    // resize (see the end of tick). No mouse there, so touch-emulated mouse moves are ignored.
+    const phone = window.matchMedia("(max-width: 640px)").matches;
+    const dpr = phone ? 1 : Math.min(window.devicePixelRatio || 1, 2);
     let resizeTimer: ReturnType<typeof setTimeout> | undefined;
     const holoCanvas = document.createElement("canvas");
     const holoCtx = holoCanvas.getContext("2d");
@@ -192,6 +196,7 @@ const DotField = memo(function DotField({
       holoCtx?.setTransform(dpr, 0, 0, dpr, 0, 0);
       iri?.resize(w, h);
       buildDots(w, h);
+      wake();
     }
 
     function buildDots(w: number, viewH: number) {
@@ -261,6 +266,7 @@ const DotField = memo(function DotField({
     // Measure against the live viewport rect so this stays correct when the field is
     // position: fixed and the page scrolls underneath it.
     function onMouseMove(e: MouseEvent) {
+      if (phone) return;
       const rect = canvas!.getBoundingClientRect();
       mouseRef.current.x = e.clientX - rect.left;
       mouseRef.current.y = e.clientY - rect.top;
@@ -274,6 +280,12 @@ const DotField = memo(function DotField({
       const rect = canvas!.getBoundingClientRect();
       const scrollY = propsRef.current.scrollWithPage ? window.scrollY : 0;
       bursts.push({ x: e.clientX - rect.left, y: e.clientY - rect.top + scrollY, start: performance.now(), env: 0 });
+      wake();
+    }
+
+    // Restarts the frame loop if it's asleep (phones only; elsewhere it never sleeps).
+    function wake() {
+      if (!rafRef.current) rafRef.current = requestAnimationFrame(tick);
     }
 
     function onMouseLeave() {
@@ -294,6 +306,9 @@ const DotField = memo(function DotField({
     const speedInterval = setInterval(updateMouseSpeed, 20);
 
     let frameCount = 0;
+    // Phones: last frame's scroll position, and frames left before the loop sleeps.
+    let lastScrollY = -1;
+    let settle = 0;
     const holoBuckets: number[][] = Array.from({ length: HOLO_ALPHAS }, () => []);
     // Star mode: indices of the dots currently showing as stars.
     const activeStars: number[] = [];
@@ -517,6 +532,17 @@ const DotField = memo(function DotField({
         ctx!.drawImage(holoCanvas, 0, 0, w, h);
       }
 
+      // Phones: keep going while the page scrolls, a tap burst plays or stars are still fading,
+      // plus a few frames to settle; then sleep until wake().
+      if (phone) {
+        const moving = scrollY !== lastScrollY || bursts.length > 0 || activeStars.length > 0;
+        lastScrollY = scrollY;
+        settle = moving ? 20 : settle - 1;
+        if (settle <= 0) {
+          rafRef.current = 0;
+          return;
+        }
+      }
       rafRef.current = requestAnimationFrame(tick);
     }
 
@@ -527,9 +553,10 @@ const DotField = memo(function DotField({
     pageObserver?.observe(document.body);
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     window.addEventListener("click", onClick);
+    window.addEventListener("scroll", wake, { passive: true });
     document.documentElement.addEventListener("mouseleave", onMouseLeave);
     window.addEventListener("blur", onMouseLeave);
-    rafRef.current = requestAnimationFrame(tick);
+    wake(); // doResize() above may already have started it; never start a second loop.
 
     rebuildRef.current = () => {
       const { w, h } = sizeRef.current;
@@ -538,12 +565,16 @@ const DotField = memo(function DotField({
 
     return () => {
       cancelAnimationFrame(rafRef.current);
+      // Clear it too: wake() only starts a loop when this is 0, so a stale id left here (React
+      // mounts effects twice in development) would stop the dots from ever starting again.
+      rafRef.current = 0;
       clearInterval(speedInterval);
       clearTimeout(resizeTimer);
       window.removeEventListener("resize", resize);
       pageObserver?.disconnect();
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("click", onClick);
+      window.removeEventListener("scroll", wake);
       document.documentElement.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("blur", onMouseLeave);
       iri?.destroy();
