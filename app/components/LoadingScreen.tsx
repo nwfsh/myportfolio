@@ -23,6 +23,7 @@ const STEPS = [
 const START_MS = 400; // empty bar before typing starts
 const TYPE_MS = 30; // average time per typed character (each one varies a little)
 const SEND_MS = 300; // pause on the finished prompt before it's sent
+const MOVE_MS = 700; // the bar's move after sending; must match the transitions in globals.css
 const STEP_MS = 800; // time between steps appearing
 const HOLD_MS = 700; // pause on the finished line before the screen fades
 const FADE_MS = 500; // must match the .loader transition in globals.css
@@ -35,11 +36,14 @@ const FADE_MS = 500; // must match the .loader transition in globals.css
 export default function LoadingScreen() {
   const [typed, setTyped] = useState("");
   const [sent, setSent] = useState(false);
+  // True once the bar has finished moving after sending; only then do the message and the
+  // thinking line come in, so nothing overlaps the move.
+  const [moved, setMoved] = useState(false);
   const [shown, setShown] = useState(1);
   const [pageReady, setPageReady] = useState(false);
   const [phase, setPhase] = useState<"working" | "leaving" | "gone">("working");
   // shown goes one past the list so the last step also gets its STEP_MS as "in progress".
-  const working = !(sent && pageReady && shown > STEPS.length);
+  const working = !(moved && pageReady && shown > STEPS.length);
 
   // Type the prompt one character at a time, then send it. Reduced motion: all at once.
   useEffect(() => {
@@ -54,12 +58,20 @@ export default function LoadingScreen() {
     return () => clearTimeout(id);
   }, [typed, sent]);
 
-  // Once sent, reveal the steps one at a time.
+  // After sending, wait for the bar's move to finish. Reduced motion: no move, no wait.
   useEffect(() => {
-    if (!sent || shown > STEPS.length) return;
+    if (!sent) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const id = setTimeout(() => setMoved(true), reduced ? 0 : MOVE_MS);
+    return () => clearTimeout(id);
+  }, [sent]);
+
+  // Once moved, reveal the steps one at a time.
+  useEffect(() => {
+    if (!moved || shown > STEPS.length) return;
     const id = setTimeout(() => setShown((n) => n + 1), STEP_MS);
     return () => clearTimeout(id);
-  }, [shown, sent]);
+  }, [shown, moved]);
 
   // Wait for the page's images and web fonts.
   useEffect(() => {
@@ -118,7 +130,7 @@ export default function LoadingScreen() {
     >
       {/* The "chat": the sent prompt, then the thinking line answering it. */}
       <div className="loader__chat">
-        {sent ? (
+        {moved ? (
           <>
             <p className="loader__message">{PROMPT}</p>
             <ThoughtLine
