@@ -543,6 +543,16 @@
     display: none;
   }
 
+  /* Smaller, slimmer tech tags on phones. */
+  .pa-tags {
+    gap: 5px;
+  }
+
+  .pa-tag {
+    padding: 1px 8px;
+    font-size: 0.7rem;
+  }
+
   .pa-panel--active[data-has-video] .pa-content > .pa-tags {
     opacity: 1;
     max-height: none;

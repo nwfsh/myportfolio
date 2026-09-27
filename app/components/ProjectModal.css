@@ -211,6 +211,11 @@
     --pm-title: 1.5rem;
   }
 
+  /* Tech tags match the smaller phone size on the cards. */
+  .project-modal .pa-tag {
+    font-size: 0.7rem;
+  }
+
   .project-modal__body {
     padding: 24px 20px;
   }
