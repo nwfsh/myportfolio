@@ -42,7 +42,7 @@ export type Project = {
 
 export const PROJECTS: Project[] = [
   {
-    title: "BlindSpot",
+    title: "BlindEye",
     date: "Sep 2026 – Present",
     kind: "Personal project",
     description:
