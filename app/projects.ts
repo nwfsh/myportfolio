@@ -46,6 +46,24 @@ export type Project = {
 
 export const PROJECTS: Project[] = [
   {
+    title: "Feedle",
+    date: "Sep 2026 – Present",
+    kind: "Personal project",
+    status: "In progress",
+    description:
+      "Your camera roll is full of good photos. The hard part is making them look good together. **Feedle scans your library, finds your strongest shots, and arranges them into a feed that actually feels cohesive**, with colors that flow and a grid that holds together.",
+    technical:
+      "A tool that turns a folder of photos into a **cohesive, aesthetic feed**, deciding both **which photos belong together and what order to arrange them in**. It's built with **PyTorch, scikit-learn, and OpenCV/Pillow** for the machine learning and image analysis, a **FastAPI** backend, a **PostgreSQL** database, and a **React** front end.",
+    points: [
+      "**Scored how good each photo looks** using a **pretrained CLIP-based aesthetic model**, so the feed starts from strong individual shots.",
+      "**Built custom image-analysis features with OpenCV** to measure how well photos work together, such as how smoothly colors flow from one tile to the next and how busy or calm each photo is.",
+      "**Trained a logistic regression model on example feeds I labeled by hand** as good or bad, so it learns which of these signals matters most for a feed to feel coherent.",
+      "**Used that learned scoring to drive the final result**, selecting the best subset from any photo folder and arranging it in the order that scores highest.",
+    ],
+    categories: ["ml-ai", "full-stack"],
+    tags: ["PyTorch", "scikit-learn", "OpenCV", "FastAPI", "Supabase", "React", "TypeScript"],
+  },
+  {
     title: "BlindEye",
     date: "Sep 2026 – Present",
     kind: "Personal project",

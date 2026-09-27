@@ -33,15 +33,18 @@ type Props = {
   view?: "pitch" | "technical";
 };
 
+const OPEN_PX = 400;
+const CLOSED_PX = 110;
+
 const labelOf = (id: string) => CATEGORIES.find((c) => c.id === id)?.label ?? id;
 
 export default function ProjectAccordion({
   items,
   resetKey,
-  height = 1000, // 6 projects: open strip ~400px, closed ones ~110px (room for title + stack)
+  height: heightProp,
   gap = 10,
   radius = 14,
-  expandRatio = 0.42,
+  expandRatio: expandRatioProp,
   duration = 0.6,
   ease = "power3.out",
   parallax = 0.5,
@@ -62,6 +65,10 @@ export default function ProjectAccordion({
   const reducedRef = useRef(false);
 
   const count = items.length;
+  // By default the list sizes itself from the number of projects so every strip keeps its size:
+  // the open one OPEN_PX tall, the closed ones CLOSED_PX (room for title + stack).
+  const height = heightProp ?? OPEN_PX + (CLOSED_PX + gap) * (count - 1);
+  const expandRatio = expandRatioProp ?? OPEN_PX / (height - gap * (count - 1));
   const [active, setActive] = useState(0);
   // Project shown in the "Read more" pop-up, if any.
   const [reading, setReading] = useState<Project | null>(null);
