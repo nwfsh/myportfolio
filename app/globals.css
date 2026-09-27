@@ -6,6 +6,10 @@
   --card: #fff;
   --border: #e5e5e5;
   --accent: #2563eb;
+  /* Underline colour for highlighted phrases (.hl). Swap by changing this one line:
+       light grey  #d4d4d8
+       dusty pink  #c897af */
+  --hl-underline: #d4d4d8;
 }
 
 * {
@@ -48,6 +52,18 @@ input,
 select,
 textarea {
   font-family: inherit;
+}
+
+/* Highlighted key phrases (**…** in project text, experience points and the statement; <strong
+   className="hl"> elsewhere). Same weight as the text, since Cantarell's bold looked like a
+   different font: just near-black with a soft underline (--hl-underline). */
+.hl {
+  font-weight: inherit;
+  color: #09090b;
+  text-decoration: underline;
+  text-decoration-color: var(--hl-underline); /* set at the top of this file */
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
 }
 
 a {
@@ -451,12 +467,15 @@ a {
   font-size: 0.9rem;
 }
 
-/* Pitch <-> Technical switch, at the end of the filter row. The side that's showing is darker. */
+/* Pitch <-> Technical switch, first in the filter row, with a divider before the category
+   chips. The side that's showing is darker. */
 .project-view {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin-left: auto;
+  margin-right: 6px;
+  padding-right: 18px;
+  border-right: 1px solid var(--border);
   font-size: 0.9rem;
 }
 

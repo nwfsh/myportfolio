@@ -259,6 +259,35 @@
   font-size: 1.02rem;
 }
 
+.pa-text p {
+  margin: 0;
+}
+
+/* A small aside under the write-up (e.g. "my first project"): light and quiet. */
+.section .pa-details .pa-note {
+  color: #a1a1aa;
+  font-size: 0.85rem;
+}
+
+/* "Read more": opens the project pop-up (ProjectModal). Plain text link, body font. */
+.pa-more {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #18181b;
+  font-size: 0.92rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: #a1a1aa;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 150ms ease;
+}
+
+.pa-more:hover {
+  text-decoration-color: currentColor;
+}
+
 /* Pitch/Technical swap: the new text fades in. */
 .pa-desc {
   animation: pa-desc-in 300ms ease;
@@ -353,12 +382,6 @@
   font-size: 0.86rem;
 }
 
-/* An opened dropdown can outgrow the strip; the text column scrolls instead of being cut off. */
-.pa-panel--active .pa-content {
-  max-height: 100%;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
 
 .pa-tags {
   display: flex;

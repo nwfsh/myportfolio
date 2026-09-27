@@ -24,25 +24,7 @@ export default function ProjectGrid() {
   return (
     <>
       <div className="project-filter">
-        <JellyRadio
-          ariaLabel="Highlight projects by category"
-          items={[{ value: "all", label: "All" }, ...CATEGORIES.map((c) => ({ value: c.id, label: c.label }))]}
-          value={filter}
-          onChange={(v) => setFilter(v as Filter)}
-          chipColor="#f4f4f5"
-          activeColor="#f4f4f5"
-          textColor="#3f3f46"
-          activeTextColor="#18181b"
-          size="md"
-          gap={14}
-          swell={0}
-          barge={0}
-          shrink={0}
-        />
-        <p className="project-filter__status" aria-live="polite">
-          {filter === "all" ? `${count} projects` : `${count} ${labelOf(filter)} project${count === 1 ? "" : "s"} first`}
-        </p>
-        {/* Pitch <-> Technical for every card at once. */}
+        {/* Pitch <-> Technical for every card at once. First in the row so it's seen first. */}
         <div className="project-view">
           <span data-on={!technical ? "" : undefined} onClick={() => setTechnical(false)}>
             Pitch
@@ -63,6 +45,24 @@ export default function ProjectGrid() {
             Technical
           </span>
         </div>
+        <JellyRadio
+          ariaLabel="Highlight projects by category"
+          items={[{ value: "all", label: "All" }, ...CATEGORIES.map((c) => ({ value: c.id, label: c.label }))]}
+          value={filter}
+          onChange={(v) => setFilter(v as Filter)}
+          chipColor="#f4f4f5"
+          activeColor="#f4f4f5"
+          textColor="#3f3f46"
+          activeTextColor="#18181b"
+          size="md"
+          gap={14}
+          swell={0}
+          barge={0}
+          shrink={0}
+        />
+        <p className="project-filter__status" aria-live="polite">
+          {filter === "all" ? `${count} projects` : `${count} ${labelOf(filter)} project${count === 1 ? "" : "s"} first`}
+        </p>
       </div>
 
       <ProjectAccordion

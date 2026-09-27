@@ -6,6 +6,8 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { gsap } from "gsap";
 import { CATEGORIES, type Project } from "../projects";
+import ProjectModal from "./ProjectModal";
+import { rich } from "./rich";
 import "./ProjectAccordion.css";
 
 type Item = { project: Project; dim?: boolean; highlightCategory?: string };
@@ -59,6 +61,8 @@ export default function ProjectAccordion({
 
   const count = items.length;
   const [active, setActive] = useState(0);
+  // Project shown in the "Read more" pop-up, if any.
+  const [reading, setReading] = useState<Project | null>(null);
   // Identity of the current order. The filter can reorder strips without changing `active`
   // (it stays 0), so the layout must also re-run when the order changes — otherwise the
   // previously open strip keeps its size at its new position and the new first strip is stuck small.
@@ -253,13 +257,27 @@ export default function ProjectAccordion({
                   detailRefs.current[i] = el;
                 }}
               >
-                {/* Keyed inner span: the new text fades in when the switch flips (the <p> itself
+                {/* Keyed inner block: the new text fades in when the switch flips (the outer div
                     stays, since GSAP owns its opacity). */}
-                <p>
-                  <span key={view} className="pa-desc">
-                    {view === "technical" && p.technical ? p.technical : p.description}
-                  </span>
-                </p>
+                <div className="pa-text">
+                  <div key={view} className="pa-desc">
+                    <p>{rich(view === "technical" && p.technical ? p.technical : p.description)}</p>
+                  </div>
+                </div>
+                {p.note ? <p className="pa-note">{rich(p.note)}</p> : null}
+                {/* Bullet points only appear in the pop-up. */}
+                {p.points?.length ? (
+                  <button
+                    type="button"
+                    className="pa-more"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setReading(p);
+                    }}
+                  >
+                    Read more
+                  </button>
+                ) : null}
                 {/* Wins dropdown, closed by default. */}
                 {p.wins?.length ? (
                   <details className="pa-drop pa-drop--small">
@@ -325,6 +343,7 @@ export default function ProjectAccordion({
           </div>
         );
       })}
+      {reading ? <ProjectModal project={reading} onClose={() => setReading(null)} /> : null}
     </div>
   );
 }
