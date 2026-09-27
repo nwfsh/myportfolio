@@ -22,15 +22,15 @@ const EXPERIENCE: { org: string; location?: string; roles: Role[] }[] = [
                 title: "External Engagement Coordinator",
                 dates: "Apr 2026 – Present",
                 points: [
-                    "Contributing to day-of operations and designed website/merch (reaching 1,250+ participants) for two of Western Canada’s largest hackathons – HackCamp and nwHacks – as part of a 55-member team.",
+                    "Contributing to day-of operations and **designed website/merch** (reaching **1,250+ participants**) for two of **Western Canada’s largest hackathons** – HackCamp and nwHacks – as part of a **55-member team**.",
                 ],
             },
             {
                 title: "EDI Coordinator & 2nd Year Rep",
                 dates: "Oct 2025 – Apr 2026",
                 points: [
-                    "Led a Pitching 101 and Inclusive Language workshop for 50+ hackers and 40+ mentors/judges/volunteers.",
-                    "Contributed to day-of operations and curated an inclusive environment for three of Western Canada’s largest hackathons – HackCamp, nwHacks, cmd-f – as part of a 55-member team.",
+                    "**Led a Pitching 101 and Inclusive Language workshop** for **50+ hackers** and **40+ mentors/judges/volunteers**.",
+                    "Contributed to day-of operations and **curated an inclusive environment** for **three of Western Canada’s largest hackathons** – HackCamp, nwHacks, cmd-f – as part of a **55-member team**.",
                 ],
             },
         ],
@@ -74,8 +74,10 @@ export default function Home() {
                           </span>
                       </h1>
                       <DotSnapText>
-                          I&apos;m a 3rd-year CS student at the University of
-                          British Columbia and a full-stack developer with a love for data, AI, and ML.
+                          I&apos;m a <strong className="hl">3rd-year CS student</strong> at the{" "}
+                          <strong className="hl">University of British Columbia</strong> and a{" "}
+                          <strong className="hl">full-stack developer</strong> with a love for{" "}
+                          <strong className="hl">data, AI, and ML</strong>.
                           Sometimes, I design.{" "}
                       </DotSnapText>
                   </div>
@@ -94,13 +96,13 @@ export default function Home() {
                       wordAnimationEnd="bottom 75%"
                       blurAnimationEnd="bottom 55%"
                   >
-                      I'm drawn to the messy, unstructured data that people create
-                      online. I yearn to organize data neatly, and build algorithms and
-                      models that help computers make sense of it almost like a
-                      human would. Social media is where this gets the most
+                      I'm drawn to the **messy, unstructured data** that people create
+                      online. I yearn to organize data neatly, and build **algorithms and
+                      models** that help computers make sense of it almost like a
+                      human would. **Social media** is where this gets the most
                       interesting to me, and I'm curious about how this
-                      technology can make our world safer and our experiences more
-                      personalized!
+                      technology can make our world **safer** and our experiences more
+                      **personalized**!
                   </ScrollReveal>
               </section>
 

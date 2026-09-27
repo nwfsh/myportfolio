@@ -7,6 +7,7 @@
 // the axis for its whole duration, and its responsibilities pop out right beside its title (on
 // narrow screens they show under the timeline instead).
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { rich } from "./rich";
 import { DotSnapProbe, useDotSnap } from "./DotSnapText";
 import "./ExperienceLine.css";
 
@@ -54,7 +55,7 @@ function RoleDetails({ role, className }: { role: ExperienceRole; className: str
         <ul className="xl__points">
           {points.map((pt, i) => (
             <li key={pt}>
-              {pt}
+              {rich(pt)}
               {!role.location && i === 0 ? <DotSnapProbe probeRef={probeRef} /> : null}
             </li>
           ))}

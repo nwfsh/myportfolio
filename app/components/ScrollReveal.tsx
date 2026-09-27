@@ -42,14 +42,21 @@ export default function ScrollReveal({
 
   const splitText = useMemo(
     () =>
-      children.split(/(\s+)/).map((word, index) => {
-        if (/^\s+$/.test(word)) return word;
-        return (
-          <span className="word" key={index}>
-            {word}
-          </span>
-        );
-      }),
+      // **…** marks highlighted words (class "hl", styled in globals.css); each word still gets
+      // its own span so the reveal works word by word.
+      children
+        .split(/\*\*(.+?)\*\*/g)
+        .flatMap((segment, s) =>
+          segment.split(/(\s+)/).map((word, w) => {
+            if (!word) return null;
+            if (/^\s+$/.test(word)) return word;
+            return (
+              <span className={s % 2 === 1 ? "word hl" : "word"} key={`${s}-${w}`}>
+                {word}
+              </span>
+            );
+          })
+        ),
     [children]
   );
 
