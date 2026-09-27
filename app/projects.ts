@@ -51,7 +51,7 @@ export const PROJECTS: Project[] = [
         kind: "Personal project",
         status: "In progress",
         description:
-            "Your camera roll is full of good photos. The hard part is making them look good together. **Feedle scans your library, finds your strongest shots, and arranges them into a feed that actually feels cohesive**, with colors that flow and a grid that holds together.",
+            "Your camera roll is full of good photos. The hard part is making them look good together. **Feedle scans your library, finds your strongest shots, and arranges them into an instagram feed that actually feels cohesive**, with colors that flow and a grid that holds together.",
         technical:
             "A tool that turns a folder of photos into a **cohesive, aesthetic feed**, deciding both **which photos belong together and what order to arrange them in**. It's built with **PyTorch, scikit-learn, and OpenCV/Pillow** for the machine learning and image analysis, a **FastAPI** backend, a **PostgreSQL** database, and a **React** front end.",
         points: [
