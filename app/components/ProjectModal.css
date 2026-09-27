@@ -23,6 +23,11 @@
 .project-modal {
   --mouse-x: 50%;
   --mouse-y: 50%;
+  /* The pop-up's whole type scale: four sizes, used consistently below. */
+  --pm-title: 1.75rem; /* project name */
+  --pm-heading: 1.125rem; /* "Technical" */
+  --pm-body: 1rem; /* pitch, technical paragraph, bullets */
+  --pm-small: 0.8125rem; /* date, note, labels, tags */
 }
 
 .project-modal::before,
@@ -129,13 +134,13 @@
 }
 
 .project-modal__head h2 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: var(--pm-title);
   line-height: 1.2;
 }
 
 .project-modal__date {
   color: #71717a;
-  font-size: 0.9rem;
+  font-size: var(--pm-small);
 }
 
 .project-modal__video {
@@ -154,14 +159,14 @@
 
 .project-modal__pitch {
   color: #3f3f46;
-  font-size: 1.05rem;
+  font-size: var(--pm-body);
   line-height: 1.6;
 }
 
 .project-modal__note {
   margin-top: -8px; /* sits close under the pitch it's about */
   color: #a1a1aa;
-  font-size: 0.88rem;
+  font-size: var(--pm-small);
 }
 
 .project-modal__section {
@@ -174,7 +179,7 @@
 
 /* A normal small heading (Lato, via the global h3 rule). */
 .project-modal__section h3 {
-  font-size: 1.1rem;
+  font-size: var(--pm-heading);
   line-height: 1.3;
   color: var(--fg);
 }
@@ -182,7 +187,7 @@
 .project-modal__section p,
 .project-modal__section ul {
   color: #3f3f46;
-  font-size: 0.98rem;
+  font-size: var(--pm-body);
   line-height: 1.6;
 }
 
@@ -193,7 +198,19 @@
   padding-left: 1.2em;
 }
 
+/* Labels (project type, categories, award) and tags: the small size, in the pop-up only. */
+.project-modal .pa-kind,
+.project-modal .pa-cat,
+.project-modal .pa-badge,
+.project-modal .pa-tag {
+  font-size: var(--pm-small);
+}
+
 @media (max-width: 640px) {
+  .project-modal {
+    --pm-title: 1.5rem;
+  }
+
   .project-modal__body {
     padding: 24px 20px;
   }
