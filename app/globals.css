@@ -94,9 +94,52 @@ a {
   height: 40px;
 }
 
+/* The dock holds the section chips, a divider, then Resume. */
+.dock {
+  display: flex;
+  align-items: center;
+}
+
+.dock__divider {
+  width: 1px;
+  height: 22px;
+  background: var(--border);
+}
+
+/* Resume: looks like an unselected section chip (same height, radius, colours), but opens the
+   resume pop-up instead of scrolling. Cantarell 400 (the font has no 500). */
+.dock__resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  height: 40px;
+  margin: 6px 16px 6px 8px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 18px;
+  background: #f4f4f5;
+  color: #3f3f46;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.dock__resume:hover {
+  background: #e7e7ea;
+}
+
+.dock__resume:active {
+  transform: scale(0.97);
+}
+
 /* Narrow screens: icons only. Labels stay in the accessibility tree (visually hidden, not removed). */
 @media (max-width: 520px) {
-  .dock .jelly-radio__label {
+  .dock .jelly-radio__label,
+  .dock__resume-label {
     position: absolute;
     width: 1px;
     height: 1px;

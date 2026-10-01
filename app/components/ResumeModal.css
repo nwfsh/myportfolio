@@ -1,0 +1,147 @@
+/* The dock's "Resume" pop-up (ResumeModal.tsx). Fonts follow the site: the heading and role names
+   in Lato (role names regular, not bold), everything else in Cantarell; only weights the fonts ship. */
+.resume-modal {
+  width: min(520px, calc(100% - 32px));
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--fg);
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.45);
+}
+
+.resume-modal[open] {
+  animation: resume-modal-in 260ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.resume-modal::backdrop {
+  background: rgb(24 24 27 / 0.4);
+  backdrop-filter: blur(4px);
+}
+
+@keyframes resume-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+.resume-modal__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 28px;
+}
+
+.resume-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #71717a;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.resume-modal__close:hover {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.resume-modal__body h2 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.resume-modal__intro {
+  margin-bottom: 12px;
+  color: #71717a;
+  font-size: 0.9rem;
+}
+
+.resume-modal__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+
+/* One resume: icon, role, then View / Download on the right. */
+.resume-modal__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #f9f9fa;
+}
+
+.resume-modal__icon {
+  display: inline-flex;
+  color: #71717a;
+}
+
+.resume-modal__role {
+  flex: 1;
+  min-width: 10ch;
+  font-family: var(--font-lato), system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 400; /* Lato regular */
+}
+
+.resume-modal__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.resume-modal__actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: #ececef;
+  color: #18181b;
+  font-size: 0.85rem;
+  transition: background-color 150ms ease;
+}
+
+.resume-modal__actions a:hover {
+  background: #e0e0e4;
+}
+
+/* Download is the main action: solid dark. */
+.resume-modal__actions a[download] {
+  background: #18181b;
+  color: #fafafa;
+}
+
+.resume-modal__actions a[download]:hover {
+  background: #3f3f46;
+}
+
+@media (max-width: 640px) {
+  .resume-modal__body {
+    padding: 24px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-modal[open] {
+    animation: none;
+  }
+}

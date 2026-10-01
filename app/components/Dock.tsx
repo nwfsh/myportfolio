@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Briefcase01Icon, Folder01Icon, Home01Icon, UserIcon } from "@hugeicons/core-free-icons";
+import { Briefcase01Icon, File02Icon, Folder01Icon, Home01Icon, UserIcon } from "@hugeicons/core-free-icons";
 import JellyRadio from "./JellyRadio";
+import ResumeModal from "./ResumeModal";
 
 const SECTIONS = [
   { id: "home", label: "Home", icon: Home01Icon },
@@ -29,6 +30,7 @@ function sectionAtCentre() {
 
 export default function Dock() {
   const [active, setActive] = useState(SECTIONS[0].id);
+  const [resumeOpen, setResumeOpen] = useState(false);
   const lockUntil = useRef(0);
 
   useEffect(() => {
@@ -81,6 +83,13 @@ export default function Dock() {
         gap={6}
         radius={18}
       />
+      {/* Not a section: opens the resume pop-up. Styled like the chips (see .dock__resume). */}
+      <span className="dock__divider" aria-hidden="true" />
+      <button type="button" className="dock__resume" onClick={() => setResumeOpen(true)}>
+        <HugeiconsIcon icon={File02Icon} size={16} strokeWidth={2} aria-hidden="true" />
+        <span className="dock__resume-label">Resume</span>
+      </button>
+      {resumeOpen ? <ResumeModal onClose={() => setResumeOpen(false)} /> : null}
     </nav>
   );
 }
