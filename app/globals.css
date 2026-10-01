@@ -729,6 +729,11 @@ a {
     0 14px 34px -20px rgba(0, 0, 0, 0.35);
 }
 
+/* Effort pill: just "High", without its sparkle icon. */
+.loader__bar .prompt-bar__pick[aria-label="Choose effort"] svg {
+  display: none;
+}
+
 .loader__bar .prompt-bar__input {
   min-height: 44px; /* two lines' room even while empty */
   font-size: 15px; /* same as the message and the thinking heading */
