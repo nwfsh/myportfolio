@@ -83,13 +83,13 @@ export default function ProjectModal({
           />
         ) : null}
 
-        <p className="project-modal__pitch">{rich(p.description)}</p>
+        <p className="project-modal__pitch">{rich(p.fullDescription ?? p.description)}</p>
         {p.note ? <p className="project-modal__note">{rich(p.note)}</p> : null}
 
-        {p.technical || p.points?.length ? (
+        {p.technical || p.fullTechnical || p.points?.length ? (
           <section className="project-modal__section">
             <h3>Technical</h3>
-            {p.technical ? <p>{rich(p.technical)}</p> : null}
+            {p.fullTechnical || p.technical ? <p>{rich(p.fullTechnical ?? p.technical ?? "")}</p> : null}
             {p.points?.length ? (
               <ul>
                 {p.points.map((pt) => (

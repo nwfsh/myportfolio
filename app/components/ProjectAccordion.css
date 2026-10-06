@@ -263,6 +263,19 @@
   margin: 0;
 }
 
+/* Desktop: the card shows at most 5 lines of the write-up (ending in "…"), so long ones never
+   push "Read more" past the strip's bottom edge; the full text is in the pop-up. Phones grow
+   to fit, so no limit there. */
+@media (min-width: 641px) {
+  .pa-text p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+    overflow: hidden;
+  }
+}
+
 /* A small aside under the write-up (e.g. "my first project"): light and quiet. */
 .section .pa-details .pa-note {
   color: #a1a1aa;

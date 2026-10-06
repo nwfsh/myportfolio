@@ -23,6 +23,10 @@ export type Project = {
   spark?: string;
   // Optional technical write-up, shown instead of the pitch while the Pitch/Technical switch is on.
   technical?: string;
+  // Optional longer versions for the "Read more" pop-up, so the card can stay short. Without them
+  // the pop-up shows description / technical as is.
+  fullDescription?: string;
+  fullTechnical?: string;
   // Optional bullet points under the technical write-up; shown in the "Read more" pop-up.
   points?: string[];
   // Optional small aside on the card and in the pop-up (e.g. "my first project").
@@ -69,6 +73,44 @@ export const PROJECTS: Project[] = [
             "Supabase",
             "React",
             "TypeScript",
+        ],
+    },
+    {
+        title: "Pickture",
+        date: "StormHacks · 2026",
+        kind: "Hackathon project",
+        description:
+            "**Pickture learns your taste in photos of yourself, then coaches you out loud through the live camera**, one fix at a time, so you get the shot on the first try.",
+        fullDescription:
+            "You hand your phone to a friend, and the photo comes back wrong. They can't see what you see: your chin angle, your good side, the smile you actually like. **Pickture learns your taste in photos of yourself, then coaches you out loud through the live camera, one fix at a time**, so you get the shot on the first try.",
+        note: "Built in 24 hours with a team of 4. **My part: building the taste models** and helping design the front end.",
+        technical:
+            "A phone camera app that **coaches the person being photographed**, speaking one fix at a time. Built with **React Native (Expo)**, a **Python FastAPI** server, **MediaPipe, InsightFace, and OpenCV**, **scikit-learn**, and **ElevenLabs**.",
+        fullTechnical:
+            "A phone camera app that **coaches the person being photographed**. It learns what you like in photos of yourself, then watches the live camera and **speaks one fix at a time** in a coach voice you choose. It's built with **React Native (Expo) and TypeScript** for the app, a **Python FastAPI** server with a **SQLite** database, **MediaPipe, InsightFace, and OpenCV** for reading each camera frame, **scikit-learn and NumPy** for the taste model, and **ElevenLabs** for the voice.",
+        points: [
+            "**Trained a personal taste model from simple \"which do you prefer?\" picks** between two moments of a 15-second clip. Each pick tells the model that one photo beat another, and it learns how much chin angle, face turn, smile, teeth, and eye contact matter to you (a **Bradley-Terry ranker**, fitted as a logistic regression in scikit-learn).",
+            "**Kept setup to about two minutes by letting the model choose its own questions.** It asks about the pair of photos it is least sure of, and it stops somewhere between 15 and 40 picks, once it is confident about your top priority or has correctly guessed 12 of your last 15 picks. If your picks show no consistent pattern, it says so instead of inventing a preference.",
+            "**Measured 97 features in every camera frame**, combining **four pretrained Google MediaPipe models** (face, body, hands, and objects) with our own OpenCV measurements for lighting, lip and cheek color, sharpness, and framing.",
+            "**Turned all of that into a single spoken tip per frame**, ranked so that anything making the photo unusable comes first, then framing and lighting, then the one change your taste model thinks would help most.",
+            "**Stopped the coach from talking over itself.** Results flicker from frame to frame, so a tip has to hold for 1 second before it is spoken, lines never cut each other off, and an unfixed tip only repeats after 12 seconds.",
+            "**Made it work in group photos by using face recognition (InsightFace)** to find you among several people, so the coach judges only your face and says your name first. On **153 group test photos**, the right person always scored above the cut-off and the wrong person always scored below it.",
+            "**Gave the coach four personalities**, each with its own 34 lines written in that character's voice. All **136 clips are generated ahead of time with ElevenLabs** so a tip plays instantly, and your name is recorded live the first time you use a profile.",
+            "**Built and compared a second, more flexible model (a Gaussian process written from scratch in NumPy)** that can learn when two features only matter together, like \"chin down only looks good with a soft smile.\" On 51 held-back test picks from one person it **agreed 73% of the time against 65%** for the simpler model, which is the one running in the live app.",
+        ],
+        categories: ["ml-ai", "full-stack"],
+        tags: [
+            "React Native (Expo)",
+            "TypeScript",
+            "Python",
+            "FastAPI",
+            "SQLite",
+            "MediaPipe",
+            "InsightFace",
+            "OpenCV",
+            "scikit-learn",
+            "NumPy",
+            "ElevenLabs",
         ],
     },
     {
