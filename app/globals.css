@@ -210,6 +210,15 @@ a {
   left: auto;
   right: 58px;
   bottom: 18px;
+  /* The longer "…generated!" labels wrap onto a second line on small frames instead of running
+     off the photo's left edge (58px on the right for the refresh button, 10px on the left). */
+  max-width: calc(100% - 68px);
+  height: auto;
+  min-height: 26px;
+  padding-block: 4px;
+  line-height: 1.3;
+  justify-content: flex-end;
+  text-align: right; /* wrapped lines line up on the right, beside the refresh button */
 }
 
 /* Refresh button: bottom-right of the photo, beside the status chip, above the stickers. */

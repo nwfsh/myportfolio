@@ -6,6 +6,7 @@ import { RefreshIcon } from "@hugeicons/core-free-icons";
 import RefineFrame, { type RefineStatus } from "./RefineFrame";
 import portrait from "@/data/portrait.jpg";
 import portrait2 from "@/data/portrait-2.jpg";
+import portrait3 from "@/data/portrait-3.jpg";
 import exclamation from "@/data/Group 5.svg";
 import exclamationIdle from "@/data/Group 5-2.svg";
 import starburst from "@/data/Group 3.svg";
@@ -14,10 +15,20 @@ import sparkle from "@/data/Union.svg";
 import sparkleIdle from "@/data/Union-2.svg";
 import paper from "@/data/Group 4.svg";
 
-// Photos the refresh button cycles through, in order.
+// Photos the refresh button cycles through, in order. `done` is the label shown once each one
+// has finished "generating".
 const PHOTOS = [
-  { src: portrait.src, alt: "Portrait of Avery" },
-  { src: portrait2.src, alt: "Avery with a bowl of salmon rice" },
+  { src: portrait.src, alt: "Portrait of Avery", done: "Photo of Avery generated!" },
+  {
+    src: portrait2.src,
+    alt: "Avery with a bowl of salmon rice",
+    done: "Photo of Avery with Mentai Don generated!",
+  },
+  {
+    src: portrait3.src,
+    alt: "Avery taking a selfie with two friends",
+    done: "Photo of Avery at StormHacks generated!",
+  },
 ];
 
 // Corner stickers: `idle` shows normally, `hover` cross-fades in while the photo is hovered.
@@ -67,7 +78,7 @@ export default function HeroPhoto() {
         aspectRatio="3 / 4"
         width={360} // max; the .hero-photo wrapper sets the actual size (fits the screen height)
         radius={20}
-        labels={{ generating: "Loading", refining: "Sharpening", complete: "Photo of Avery generated!" }}
+        labels={{ generating: "Loading", refining: "Sharpening", complete: photo.done }}
         stageDuration={STAGE_MS}
         hideAfter={4000}
       >
