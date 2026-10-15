@@ -114,8 +114,22 @@
   opacity: 1;
 }
 
+/* Chrome: animating --pa-hue on the whole list makes Chromium restyle every element in every card
+   each frame. There the list stops animating and each glow layer runs the same cycle itself
+   instead; --hue-sync (set once from the page clock in ProjectAccordion.tsx) keeps every layer,
+   and the Read more pop-up, on exactly the same colour. Looks identical; Safari is unchanged. */
+html[data-engine="blink"] .project-accordion {
+  animation: none;
+}
+
+html[data-engine="blink"] .pa-panel::after {
+  animation: pa-hue-cycle 24s linear infinite;
+  animation-delay: var(--hue-sync, 0ms);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .project-accordion {
+  .project-accordion,
+  html[data-engine="blink"] .pa-panel::after {
     animation: none;
   }
 }
@@ -469,8 +483,10 @@
    text narrows to the left half as the strip opens and the video box fades in on the right. */
 .pa-panel[data-has-video] .pa-content {
   max-width: 100%;
+  /* Quick (0.25s): narrowing re-wraps every line of text each frame, so a long slide reads as
+     sluggish and costs a lot, especially in Chrome. */
   transition:
-    max-width 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    max-width 0.25s cubic-bezier(0.23, 1, 0.32, 1),
     opacity 300ms ease;
 }
 
@@ -483,9 +499,9 @@
   max-height: 80px;
   overflow: hidden;
   transition:
-    opacity 300ms ease,
-    max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-    margin-top 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    opacity 200ms ease,
+    max-height 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+    margin-top 0.25s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .pa-panel--active[data-has-video] .pa-content > .pa-tags {

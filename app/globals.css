@@ -88,6 +88,15 @@ a {
   padding: 8px 0; /* keeps the dock as tall as with 48px chips while the chips themselves are shorter */
 }
 
+/* Chrome: re-blurring the always-moving dot field behind the dock every frame is costly in Chromium.
+   A lighter blur over a slightly more solid white looks nearly the same for much less work.
+   Safari keeps the full frosted glass above. */
+html[data-engine="blink"] .dock {
+  background: color-mix(in srgb, #ffffff 84%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
 /* Slightly taller chips than JellyRadio's "md" (36px). Set on the skin because the component
    writes --jr-h inline, which a stylesheet can't override. */
 .dock .jelly-radio__skin {

@@ -30,7 +30,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${lato.variable} ${cantarell.variable}`}>
+    // suppressHydrationWarning: the script below adds data-engine to <html> before React loads.
+    <html lang="en" className={`${lato.variable} ${cantarell.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Chrome / Edge (Chromium) get a few lighter versions of costly effects (see
+            html[data-engine="blink"] rules); Safari and Firefox are untouched. Runs before first
+            paint so nothing flips after load. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{var b=navigator.userAgentData&&navigator.userAgentData.brands;if(b&&b.some(function(x){return /Chromium/.test(x.brand)}))document.documentElement.dataset.engine="blink"}catch(e){}',
+          }}
+        />
+      </head>
       <body>
         <div className="page-bg" aria-hidden="true">
           <DotField

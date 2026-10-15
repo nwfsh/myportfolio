@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { CATEGORIES, type Project } from "../projects";
 import { rich } from "./rich";
+import { setHueSync } from "./hueSync";
 import "./ProjectModal.css";
 
 const labelOf = (id: string) => CATEGORIES.find((c) => c.id === id)?.label ?? id;
@@ -23,6 +24,7 @@ export default function ProjectModal({
     const dialog = ref.current;
     if (!dialog) return;
     if (!dialog.open) dialog.showModal();
+    setHueSync(dialog); // Chrome: same glow colour as the cards behind it
     const root = document.documentElement;
     root.style.overflow = "hidden";
     // No dialog.close() here: that fires the close event, which would call onClose and shut the

@@ -45,18 +45,43 @@ export default function LoadingScreen() {
   // shown goes one past the list so the last step also gets its STEP_MS as "in progress".
   const working = !(moved && pageReady && shown > STEPS.length);
 
-  // Type the prompt one character at a time, then send it. Reduced motion: all at once.
+  // Type the prompt, then send it. Each character gets a target time up front (TYPE_MS apart on
+  // average, each varying a little) and every frame shows as many as are due, so a busy browser
+  // (Chrome, while the page loads underneath) catches up instead of typing slower and slower.
+  // Reduced motion: all at once.
   useEffect(() => {
-    if (sent) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (typed.length >= PROMPT.length || reduced) {
-      const id = setTimeout(() => setSent(true), reduced ? 0 : SEND_MS);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setTyped(PROMPT);
+      const id = setTimeout(() => setSent(true), 0);
       return () => clearTimeout(id);
     }
-    const wait = typed.length === 0 ? START_MS : TYPE_MS * (0.5 + Math.random());
-    const id = setTimeout(() => setTyped(PROMPT.slice(0, typed.length + 1)), wait);
-    return () => clearTimeout(id);
-  }, [typed, sent]);
+    const due: number[] = [];
+    let at = START_MS;
+    for (let i = 0; i < PROMPT.length; i++) {
+      if (i > 0) at += TYPE_MS * (0.5 + Math.random());
+      due.push(at);
+    }
+    const start = performance.now();
+    let shown = 0;
+    let raf = 0;
+    let sendTimer: ReturnType<typeof setTimeout> | undefined;
+    const step = () => {
+      const elapsed = performance.now() - start;
+      let n = shown;
+      while (n < due.length && due[n] <= elapsed) n++;
+      if (n !== shown) {
+        shown = n;
+        setTyped(PROMPT.slice(0, n));
+      }
+      if (n < due.length) raf = requestAnimationFrame(step);
+      else sendTimer = setTimeout(() => setSent(true), SEND_MS);
+    };
+    raf = requestAnimationFrame(step);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(sendTimer);
+    };
+  }, []);
 
   // After sending, wait for the bar's move to finish. Reduced motion: no move, no wait.
   useEffect(() => {

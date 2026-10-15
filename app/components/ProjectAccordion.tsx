@@ -10,6 +10,7 @@ import { PlayCircleIcon } from "@hugeicons/core-free-icons";
 import { CATEGORIES, type Project } from "../projects";
 import ProjectModal from "./ProjectModal";
 import { rich } from "./rich";
+import { setHueSync } from "./hueSync";
 import "./ProjectAccordion.css";
 
 type Item = { project: Project; dim?: boolean; highlightCategory?: string };
@@ -97,6 +98,18 @@ export default function ProjectAccordion({
   // the opened card is scrolled into view, since closing the one above it shifts the page. Not on
   // the first run, so loading the page doesn't jump down to the projects.
   const tappedRef = useRef(false);
+
+  // Video preloading. Starts as "metadata" (just the size and first frame; the poster covers the
+  // box), then goes to "auto" everywhere except Chrome, matching how it was. Chrome keeps
+  // "metadata" and downloads each video the first time its card is hovered, so ~10 MB of video
+  // doesn't compete with the page (and the splash waiting on it) while it loads.
+  const [preload, setPreload] = useState<"metadata" | "auto">("metadata");
+  useEffect(() => {
+    if (document.documentElement.dataset.engine !== "blink") setPreload("auto");
+  }, []);
+
+  // Chrome: put the cards' glow colour on the shared clock (see hueSync.ts).
+  useEffect(() => setHueSync(rootRef.current), []);
   useEffect(() => {
     if (!window.matchMedia("(max-width: 640px)").matches) return;
     if (!tappedRef.current) {
@@ -372,7 +385,7 @@ export default function ProjectAccordion({
                     muted
                     loop
                     playsInline
-                    preload="auto"
+                    preload={preload}
                     aria-label={`${p.title} demo`}
                     // Size the box to this clip's own shape so none of it is cropped.
                     onLoadedMetadata={(e) => {

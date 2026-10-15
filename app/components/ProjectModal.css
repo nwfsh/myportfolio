@@ -76,6 +76,21 @@
   opacity: 1;
 }
 
+/* Chrome: the list no longer animates the hue it would inherit (see ProjectAccordion.css), so the
+   pop-up's glows run the cycle themselves, on the same shared clock (--hue-sync). */
+html[data-engine="blink"] .project-modal::before,
+html[data-engine="blink"] .project-modal::after {
+  animation: pa-hue-cycle 24s linear infinite;
+  animation-delay: var(--hue-sync, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-engine="blink"] .project-modal::before,
+  html[data-engine="blink"] .project-modal::after {
+    animation: none;
+  }
+}
+
 .project-modal::backdrop {
   background: rgb(24 24 27 / 0.4);
   backdrop-filter: blur(4px);

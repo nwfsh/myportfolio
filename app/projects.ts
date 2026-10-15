@@ -83,7 +83,7 @@ export const PROJECTS: Project[] = [
             "**Pickture learns your taste in photos of yourself, then coaches you out loud through the live camera**, one fix at a time, so you get the shot on the first try.",
         fullDescription:
             "You hand your phone to a friend, and the photo comes back wrong. They can't see what you see: your chin angle, your good side, the smile you actually like. **Pickture learns your taste in photos of yourself, then coaches you out loud through the live camera, one fix at a time**, so you get the shot on the first try.",
-        note: "Built in 24 hours with a team of 4. **My part: building the taste models** and helping design the front end.",
+        note: "Built in 24 hours with a team of 4. I worked on **extracting the face and pose measurements from each camera frame**, **training the taste models** (including the second model we compared against), and **building the onboarding flow and the camera and gallery screens**.",
         technical:
             "A phone camera app that **coaches the person being photographed**, speaking one fix at a time. Built with **React Native (Expo)**, a **Python FastAPI** server, **MediaPipe, InsightFace, and OpenCV**, **scikit-learn**, and **ElevenLabs**.",
         fullTechnical:

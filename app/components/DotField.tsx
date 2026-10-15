@@ -304,6 +304,12 @@ const DotField = memo(function DotField({
     const activeStars: number[] = [];
 
     function tick() {
+      // While the splash screen covers the page the dots can't be seen, so skip the drawing (it
+      // only competes with the splash's typing). They start the moment the splash starts fading.
+      if (!window.__splashDone) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
       frameCount++;
       const dots = dotsRef.current;
       const m = mouseRef.current;

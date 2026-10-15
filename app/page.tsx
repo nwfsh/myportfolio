@@ -96,11 +96,10 @@ export default function Home() {
                       wordAnimationEnd="bottom 75%"
                       blurAnimationEnd="bottom 55%"
                   >
-                      I'm drawn to the **messy, unstructured data** that people create
-                      online. I yearn to organize data neatly, and build **algorithms and
-                      models** that help computers make sense of it almost like a
-                      human would. **Social media** is where this gets the most
-                      interesting to me, and I'm curious about how this
+                      I'm drawn to the **raw, expressive data** that people create
+                      online. I yearn to organize data neatly, and build
+                      **algorithms and models** that help computers make sense of it
+                      almost like a human would. I'm curious about how this
                       technology can make our world **safer** and our experiences more
                       **personalized**!
                   </ScrollReveal>
