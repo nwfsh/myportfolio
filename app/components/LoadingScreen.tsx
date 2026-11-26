@@ -183,7 +183,7 @@ export default function LoadingScreen() {
             <PromptBar
               value={sent ? "" : typed}
               busy={sent && working}
-              models={[{ key: "fable-5", name: "Fable 5" }]}
+              models={[{ key: "fable-5-2", name: "Fable 5.2" }]}
               background="#ffffff"
               color="#18181b"
               menuBackground="#ffffff"
