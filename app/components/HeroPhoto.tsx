@@ -7,6 +7,7 @@ import RefineFrame, { type RefineStatus } from "./RefineFrame";
 import portrait from "@/data/portrait.jpg";
 import portrait2 from "@/data/portrait-2.jpg";
 import portrait3 from "@/data/portrait-3.jpg";
+import portrait4 from "@/data/portrait-4.jpg";
 import exclamation from "@/data/Group 5.svg";
 import exclamationIdle from "@/data/Group 5-2.svg";
 import starburst from "@/data/Group 3.svg";
@@ -28,6 +29,11 @@ const PHOTOS = [
     src: portrait3.src,
     alt: "Avery taking a selfie with two friends",
     done: "Photo of Avery at StormHacks generated!",
+  },
+  {
+    src: portrait4.src,
+    alt: "Avery with two friends at her birthday dinner",
+    done: "Photo of Avery at her birthday dinner generated!",
   },
 ];
 
