@@ -1,14 +1,22 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Download04Icon, File02Icon, LinkSquare02Icon } from "@hugeicons/core-free-icons";
+import Folder from "./Folder";
+// import DodgeField, { DodgeLabels, tauntIndex } from "./DodgeField";
 import { RESUMES } from "../resumes";
 import "./ResumeModal.css";
 
-// The dock's "Resume" pop-up: one row per resume, each with View (opens the PDF in a new tab)
-// and Download. A native <dialog> like the project pop-up, so Esc closes it and focus stays
-// inside; clicking the dimmed backdrop closes it too.
+// The View button's labels: "View" at rest, one per dodge, the last once it gives in.
+// const TAUNTS = ["View", "Nope", "Too slow", "Almost", "Okay, okay"];
+
+// One page in the folder per resume; clicking a page opens that PDF in a new tab.
+const ITEMS = RESUMES.map((r) => ({ title: r.role }));
+
+// The dock's "Resume" pop-up: a folder holding one page per resume. Click the folder to open it,
+// then click a page to open that PDF in a new tab. (The earlier list with a dodging View button is
+// commented out below.) A native <dialog> like
+// the project pop-up, so Esc closes it and focus stays inside; clicking the backdrop closes
+// it too.
 export default function ResumeModal({ onClose }: { onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
 
@@ -32,7 +40,9 @@ export default function ResumeModal({ onClose }: { onClose: () => void }) {
       aria-labelledby="resume-modal-title"
       onClose={onClose}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        // No card any more, so a click on the empty space around the folder closes it too.
+        const t = e.target as HTMLElement;
+        if (t === e.currentTarget || t.matches(".resume-modal__body, .resume-modal__folder")) onClose();
       }}
     >
       <div className="resume-modal__body">
@@ -40,28 +50,52 @@ export default function ResumeModal({ onClose }: { onClose: () => void }) {
           ×
         </button>
         <h2 id="resume-modal-title">Resume</h2>
-        <p className="resume-modal__intro">Pick the one that fits the role.</p>
+        <div className="resume-modal__folder">
+          <Folder
+            label="Resume"
+            items={ITEMS}
+            color="#a1a1aa"
+            theme="light"
+            size={typeof window !== "undefined" && window.innerWidth < 480 ? 0.75 : 1.2}
+            zoomOnClick={false}
+            onItemClick={(_item, index) =>
+              void window.open(RESUMES[index].href, "_blank", "noopener,noreferrer")
+            }
+          />
+        </div>
+        <p className="resume-modal__intro">Open the folder and pick the one that fits the role.</p>
 
+        {/* The earlier list: one row per resume with a dodging View button.
         <ul className="resume-modal__list">
           {RESUMES.map((r) => (
             <li key={r.role} className="resume-modal__item">
-              <span className="resume-modal__icon" aria-hidden="true">
-                <HugeiconsIcon icon={File02Icon} size={20} strokeWidth={1.8} />
-              </span>
               <span className="resume-modal__role">{r.role}</span>
-              <span className="resume-modal__actions">
-                <a href={r.href} target="_blank" rel="noopener noreferrer" aria-label={`View ${r.role} resume`}>
-                  <HugeiconsIcon icon={LinkSquare02Icon} size={15} strokeWidth={2} aria-hidden="true" />
-                  View
-                </a>
-                <a href={r.href} download={r.file} aria-label={`Download ${r.role} resume`}>
-                  <HugeiconsIcon icon={Download04Icon} size={15} strokeWidth={2} aria-hidden="true" />
-                  Download
-                </a>
-              </span>
+              <DodgeField
+                className="resume-modal__dodge"
+                inkColor="#18181b"
+                contrastColor="#fafafa"
+                fieldHeight={52}
+                leap
+                radius={70}
+                fleeDuration={260}
+                taunts={TAUNTS}
+              >
+                {(state) => (
+                  <a
+                    className="dodge-field__pill"
+                    href={r.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`View ${r.role} resume`}
+                  >
+                    <DodgeLabels taunts={TAUNTS} index={tauntIndex(TAUNTS, state)} />
+                  </a>
+                )}
+              </DodgeField>
             </li>
           ))}
         </ul>
+        */}
       </div>
     </dialog>
   );

@@ -1,23 +1,23 @@
-/* The dock's "Resume" pop-up (ResumeModal.tsx). Fonts follow the site: the heading and role names
-   in Lato (role names regular, not bold), everything else in Cantarell; only weights the fonts ship. */
+/* The dock's "Resume" pop-up (ResumeModal.tsx). No card: the folder sits straight on the page. Fonts follow the site: Lato for the heading and role names (role names regular, not bold),
+   everything else in Cantarell; only weights the fonts ship. */
 .resume-modal {
   width: min(520px, calc(100% - 32px));
   margin: auto;
   padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background: var(--card);
+  border: 0;
+  background: transparent;
   color: var(--fg);
-  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.45);
+  /* The folder's pages rise above it when it opens; don't clip them. */
+  overflow: visible;
 }
 
 .resume-modal[open] {
   animation: resume-modal-in 260ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+/* No dim or blur: the page behind stays exactly as it is. */
 .resume-modal::backdrop {
-  background: rgb(24 24 27 / 0.4);
-  backdrop-filter: blur(4px);
+  background: transparent;
 }
 
 @keyframes resume-modal-in {
@@ -60,15 +60,21 @@
   color: #18181b;
 }
 
+/* Kept for screen readers only; the folder's "Resume" tab says it on screen. */
 .resume-modal__body h2 {
-  font-size: 1.5rem;
-  line-height: 1.2;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
+/* A short hint under the folder. */
 .resume-modal__intro {
-  margin-bottom: 12px;
   color: #71717a;
   font-size: 0.9rem;
+  text-align: center;
 }
 
 .resume-modal__list {
@@ -78,65 +84,121 @@
   list-style: none;
 }
 
-/* One resume: icon, role, then View / Download on the right. */
-.resume-modal__item {
+/* The folder, centred, with room above for the pages to rise into when it opens. */
+.resume-modal__folder {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 12px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: #f9f9fa;
+  justify-content: center;
+  padding: 120px 0 12px;
 }
 
-.resume-modal__icon {
-  display: inline-flex;
-  color: #71717a;
+/* The folder in grey with a pearly white sheen: white at the top-left corner and a soft white band
+   of light across the front flap. */
+/* The "Resume" tab label in black. Set on the label itself: the folder picks white or black from
+   its colour and sets that inline on its root, which a variable here can't override. */
+.resume-modal__folder .folder-tab-text {
+  color: #000;
+}
+
+/* Inside of the folder (the back, and the flap's inner face once it drops open): a little deeper,
+   with a white glow along the top edge. */
+.resume-modal__folder .folder-root[data-variant="solid"] .folder-back-fill,
+.resume-modal__folder .folder-root[data-variant="solid"] .folder-face-inner {
+  background: linear-gradient(180deg, #f4f4f5, #c4c4c9 35%, #a1a1aa);
+}
+
+/* Front flap: white at the top-left fading into grey, with a white band across the middle like
+   light on a pearl. */
+.resume-modal__folder .folder-root[data-variant="solid"] .folder-face-outer {
+  background:
+    linear-gradient(
+      120deg,
+      transparent 30%,
+      rgb(255 255 255 / 0.55) 48%,
+      transparent 66%
+    ),
+    linear-gradient(160deg, #fff 0%, #e4e4e7 22%, #c4c4c9 55%, #b4b4bb 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    inset 0 0 0 1px rgb(255 255 255 / 0.18);
+}
+
+/* Each page's title is the role name: let it wrap so it shows in full (React Bits cuts it off with
+   "…"), and don't let it shrink. It was the only line on the page allowed to, so it got squeezed to
+   nothing. The placeholder lines below it get cut off at the bottom of the page instead. */
+.resume-modal__folder .folder-doc-title {
+  flex: none;
+  white-space: normal;
+  text-overflow: clip;
+}
+
+/* A page whose title wraps (Backend Engineering) has its last placeholder lines pushed off the
+   bottom. Fade the bottom of every page out so they dissolve into the paper instead of being
+   chopped at the edge; the fade ends a little above the edge, like a bottom margin. */
+.resume-modal__folder .folder-doc {
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 90%);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 90%);
+}
+
+/* One resume: role on the left, the dodging View button on the right. Same look as the Profile
+   bento tiles: soft grey, a bright top edge, and a shine that sweeps across on hover. */
+.resume-modal__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px 6px 20px;
+  border-radius: 22px;
+  color: #18181b;
+  background-color: #f4f4f5;
+  background-image: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgb(255 255 255 / 0.75) 50%,
+    transparent 60%
+  );
+  background-size: 260% 100%;
+  background-repeat: no-repeat;
+  background-position: 100% 0;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.95);
+  /* Leaving: the band jumps straight back (no sweep), as on the bento tiles. */
+  transition: background-color 200ms ease;
+}
+
+.resume-modal__item:hover {
+  background-position: 0% 0;
+  transition:
+    background-position 1.1s cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 200ms ease;
 }
 
 .resume-modal__role {
-  flex: 1;
-  min-width: 10ch;
+  flex: none;
   font-family: var(--font-lato), system-ui, sans-serif;
   font-size: 1rem;
   font-weight: 400; /* Lato regular */
 }
 
-.resume-modal__actions {
-  display: flex;
-  gap: 8px;
+/* The field the View button leaps across: the rest of the row after the role name. */
+.resume-modal__dodge.dodge-field {
+  flex: 1;
+  min-width: 0;
 }
 
-.resume-modal__actions a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border-radius: 10px;
-  background: #ececef;
-  color: #18181b;
+/* No fill of its own; it sits straight on the tile. Still fills dark once caught. */
+.resume-modal__dodge .dodge-field__pill {
+  background: transparent;
+  height: 36px;
+  padding: 0 18px;
   font-size: 0.85rem;
-  transition: background-color 150ms ease;
-}
-
-.resume-modal__actions a:hover {
-  background: #e0e0e4;
-}
-
-/* Download is the main action: solid dark. */
-.resume-modal__actions a[download] {
-  background: #18181b;
-  color: #fafafa;
-}
-
-.resume-modal__actions a[download]:hover {
-  background: #3f3f46;
+  letter-spacing: 0;
 }
 
 @media (max-width: 640px) {
   .resume-modal__body {
     padding: 24px 20px;
+  }
+
+  .resume-modal__folder {
+    padding-top: 80px;
   }
 }
 
